@@ -18,15 +18,15 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        gameBoard = new Board();
+        gameBoard = new Board(); 
 
-        DrawOnBoard(gameBoard);
-
-        AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 2);
+        AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 4);
 
         //m.move.DebugMove();
 
         //Debug.Log(m.score);
+
+        DrawOnBoard(gameBoard);
     }
 
     void DrawOnBoard(Board _board)
@@ -86,8 +86,6 @@ public class Game : MonoBehaviour
             else newBoard = new Board(_board.boardState, Board.Turn.Black);
 
             newBoard.MakeMove(m);
-
-            print(newBoard == _board);
             
             currentMove = Minimax(newBoard, _turn, _currentDepth + 1, _maxDepth);
             
