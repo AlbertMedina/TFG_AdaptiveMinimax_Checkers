@@ -20,11 +20,11 @@ public class Game : MonoBehaviour
     {
         gameBoard = new Board(); 
 
-        AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 4);
+        AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 3);
 
-        //m.move.DebugMove();
+        m.move.DebugMove();
 
-        //Debug.Log(m.score);
+        Debug.Log(m.score);
 
         DrawOnBoard(gameBoard);
     }
@@ -82,8 +82,8 @@ public class Game : MonoBehaviour
         {
             Board newBoard;
 
-            if(_board.turn == Board.Turn.Black) newBoard = new Board(_board.boardState, Board.Turn.White);
-            else newBoard = new Board(_board.boardState, Board.Turn.Black);
+            if (_board.turn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White);
+            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black);
 
             newBoard.MakeMove(m);
             

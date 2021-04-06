@@ -14,16 +14,16 @@ public class Board
 
     public Board()
     {
-        boardState = new Square[,] { {Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker},
-                               {Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty},
-                               {Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker, Square.Empty, Square.White_Checker},
-                               {Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty},
-                               {Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty, Square.Empty},
-                               {Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty},
-                               {Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker},
-                               {Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty, Square.Black_Checker, Square.Empty} };
+        boardState = new Square[,] { {Square.Empty,         Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker},
+                                     {Square.White_Checker, Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty},
+                                     {Square.Empty,         Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty},
+                                     {Square.Empty,         Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker},
+                                     {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty} };
 
-        turn = Turn.White;
+        turn = Turn.Black;
     }
 
     public Board(Square[,] _board, Turn _turn)
