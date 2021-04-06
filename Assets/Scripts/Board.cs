@@ -310,9 +310,7 @@ public class Board
 
     public float Evaluate()
     {
-        Debug.Log("WWWW");
         return CheckersCount() * 1f + KingsCount() * 3f;
-        
     }
 
     private float CheckersCount()

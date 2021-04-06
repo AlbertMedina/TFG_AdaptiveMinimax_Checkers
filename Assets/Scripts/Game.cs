@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [SerializeField] GameObject board;
+    [SerializeField] GameObject blackChecker;
+    [SerializeField] GameObject whiteChecker;
+
     struct AvailableMove
     {
         public Move move;
@@ -16,11 +20,32 @@ public class Game : MonoBehaviour
     {
         gameBoard = new Board();
 
+        DrawOnBoard(gameBoard);
+
         AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 2);
 
-        m.move.DebugMove();
+        //m.move.DebugMove();
 
-        Debug.Log(m.score);
+        //Debug.Log(m.score);
+    }
+
+    void DrawOnBoard(Board _board)
+    {
+        for (int i = 0; i < _board.boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < _board.boardState.GetLength(1); j++)
+            {
+                switch (_board.boardState[i, j])
+                {
+                    case Board.Square.Black_Checker:
+                        Instantiate(blackChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity);
+                        break;
+                    case Board.Square.White_Checker:
+                        Instantiate(whiteChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity);
+                        break;
+                }
+            }
+        }
     }
 
     void Update()
@@ -61,6 +86,8 @@ public class Game : MonoBehaviour
             else newBoard = new Board(_board.boardState, Board.Turn.Black);
 
             newBoard.MakeMove(m);
+
+            print(newBoard == _board);
             
             currentMove = Minimax(newBoard, _turn, _currentDepth + 1, _maxDepth);
             
