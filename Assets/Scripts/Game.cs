@@ -6,7 +6,9 @@ public class Game : MonoBehaviour
 {
     [SerializeField] GameObject board;
     [SerializeField] GameObject blackChecker;
+    [SerializeField] GameObject blackKing;
     [SerializeField] GameObject whiteChecker;
+    [SerializeField] GameObject whiteKing;
 
     struct AvailableMove
     {
@@ -18,18 +20,26 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        gameBoard = new Board(); 
+        gameBoard = new Board();
 
-        AvailableMove m = Minimax(gameBoard, gameBoard.turn, 0, 3);
-
-        m.move.DebugMove();
-
-        Debug.Log(m.score);
-
-        DrawOnBoard(gameBoard);
+        DrawBoard(gameBoard);
     }
 
-    void DrawOnBoard(Board _board)
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 5);
+
+            gameBoard.MakeMove(chosenMove.move);
+
+            DrawMove(chosenMove.move);
+
+            gameBoard.ChangeTurn();
+        }
+    }
+
+    void DrawBoard(Board _board)
     {
         for (int i = 0; i < _board.boardState.GetLength(0); i++)
         {
@@ -38,19 +48,40 @@ public class Game : MonoBehaviour
                 switch (_board.boardState[i, j])
                 {
                     case Board.Square.Black_Checker:
-                        Instantiate(blackChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity);
+                        Instantiate(blackChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity, board.transform.GetChild(i).GetChild(j).transform);
                         break;
                     case Board.Square.White_Checker:
-                        Instantiate(whiteChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity);
+                        Instantiate(whiteChecker, board.transform.GetChild(i).GetChild(j).transform.position, Quaternion.identity, board.transform.GetChild(i).GetChild(j).transform);
                         break;
                 }
             }
         }
     }
 
-    void Update()
+    void DrawMove(Move _move)
     {
+        board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.position = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position;
+        board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.parent = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;
 
+        if (_move.to.y <= 0 || _move.to.y >= gameBoard.boardState.GetLength(0) - 1)
+        {
+            if (board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).tag == "BlackChecker")
+            {
+                Destroy(board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).gameObject);
+                Instantiate(blackKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform);
+            }
+            else if (board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).tag == "WhiteChecker")
+            {
+                Destroy(board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).gameObject);
+                Instantiate(whiteKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform);
+            }
+        }
+
+
+        foreach (Vector2Int jumped in _move.jumped)
+        {
+            Destroy(board.transform.GetChild(jumped.y).GetChild(jumped.x).GetChild(0).gameObject);
+        }
     }
 
     AvailableMove Minimax(Board _board, Board.Turn _turn, int _currentDepth, int _maxDepth)
@@ -61,7 +92,7 @@ public class Game : MonoBehaviour
 
         if (_currentDepth >= _maxDepth)
         {
-            bestMove.score = _board.Evaluate();
+            bestMove.score = _board.Evaluate(_turn);
             return bestMove;
         }
 
@@ -69,7 +100,7 @@ public class Game : MonoBehaviour
 
         if (availableMoves.Count == 0)
         {
-            bestMove.score = _board.Evaluate();
+            bestMove.score = _board.Evaluate(_turn);
             return bestMove;
         }
 
@@ -105,6 +136,8 @@ public class Game : MonoBehaviour
                     bestMove.move = m;
                 }
             }
+
+            //if(_currentDepth == 0) Debug.Log(currentMove.score);
         }
 
         return bestMove;

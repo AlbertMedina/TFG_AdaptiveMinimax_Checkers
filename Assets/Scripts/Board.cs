@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Board
 {
-    public enum Square { Empty, Black_Checker, Black_Queen, White_Checker, White_Queen }
+    public enum Square { Empty, Black_Checker, Black_King, White_Checker, White_King }
 
     public Square[,] boardState = new Square[8, 8];
 
@@ -22,8 +22,19 @@ public class Board
                                      {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty},
                                      {Square.Empty,         Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker},
                                      {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty} };
-
+        
         turn = Turn.Black;
+
+
+      /*boardState = new Square[,] { {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty} };*/
+
     }
 
     public Board(Square[,] _board, Turn _turn)
@@ -32,37 +43,43 @@ public class Board
         turn = _turn;
     }
 
+    public void ChangeTurn()
+    {
+        if (turn == Turn.Black) turn = Turn.White;
+        else turn = Turn.Black;
+    }
+
     public List<Move> GetAllMoves()
     {
         List<Move> availableMoves = new List<Move>(0);
 
-        Square currentChecker, currentQueen;
+        Square currentChecker, currentKing;
 
         if (turn == Turn.Black)
         {
             currentChecker = Square.Black_Checker;
-            currentQueen = Square.Black_Queen;
+            currentKing = Square.Black_King;
         }
         else
         {
             currentChecker = Square.White_Checker;
-            currentQueen = Square.White_Queen;
+            currentKing = Square.White_King;
         }
 
         for (int i = 0; i < boardState.GetLength(0); i++)
         {
             for (int j = 0; j < boardState.GetLength(1); j++)
             {
-                if (boardState[i, j] == currentQueen)
+                if (boardState[i, j] == currentKing)
                 {
-                    foreach (Move move in GetJumps(i, j, new Vector2Int(i, j), new List<Vector2Int>(0), true))
+                    foreach (Move move in GetJumps(i, j, new Vector2Int(j, i), new List<Vector2Int>(0), true))
                     {
                         availableMoves.Add(move);
                     }
                 }
                 else if (boardState[i, j] == currentChecker)
                 {
-                    foreach (Move move in GetJumps(i, j, new Vector2Int(i, j), new List<Vector2Int>(0), false))
+                    foreach (Move move in GetJumps(i, j, new Vector2Int(j, i), new List<Vector2Int>(0), false))
                     {
                         availableMoves.Add(move);
                     }
@@ -76,7 +93,7 @@ public class Board
             {
                 for (int j = 0; j < boardState.GetLength(1); j++)
                 {
-                    if (boardState[i, j] == currentQueen)
+                    if (boardState[i, j] == currentKing)
                     {
                         foreach (Move move in GetMoves(i, j, true))
                         {
@@ -98,7 +115,7 @@ public class Board
     }
 
 
-    List<Move> GetJumps(int _row, int _col, Vector2Int _initPos, List<Vector2Int> _alreadyJumped, bool _queen)
+    List<Move> GetJumps(int _row, int _col, Vector2Int _initPos, List<Vector2Int> _alreadyJumped, bool _king)
     {
         List<Move> availableJumps = new List<Move>(0);
 
@@ -107,17 +124,17 @@ public class Board
         if (turn == Turn.Black) offset = 1;
         else offset = -1;
 
-        Square adversaryChecker, adversaryQueen;
+        Square adversaryChecker, adversaryKing;
 
         if (turn == Turn.Black)
         {
             adversaryChecker = Square.White_Checker;
-            adversaryQueen = Square.White_Queen;
+            adversaryKing = Square.White_King;
         }
         else
         {
             adversaryChecker = Square.Black_Checker;
-            adversaryQueen = Square.Black_Queen;
+            adversaryKing = Square.Black_King;
         }
 
         bool forward = _row - 2 * offset >= 0 && _row - 2 * offset < boardState.GetLength(0);
@@ -129,17 +146,18 @@ public class Board
 
         if (forward && right)
         {
-            if ((boardState[_row - 2 * offset, _col + 2 * offset] == Square.Empty || new Vector2(_row - 2 * offset, _col + 2 * offset) == _initPos) && (boardState[_row - offset, _col + offset] == adversaryChecker || boardState[_row - offset, _col + offset] == adversaryQueen) && !_alreadyJumped.Contains(new Vector2Int(_row - offset, _col + offset)))
+            if(turn == Turn.Black) Debug.Log(_initPos);
+            if ((boardState[_row - 2 * offset, _col + 2 * offset] == Square.Empty || new Vector2(_col + 2 * offset, _row - 2 * offset) == _initPos) && (boardState[_row - offset, _col + offset] == adversaryChecker || boardState[_row - offset, _col + offset] == adversaryKing) && !_alreadyJumped.Contains(new Vector2Int(_col + offset, _row - offset)))
             {
                 jumpsCounter = availableJumps.Count;
 
                 List<Vector2Int> alreadyJumped = _alreadyJumped;
 
-                alreadyJumped.Add(new Vector2Int(_row - offset, _col + offset));
+                alreadyJumped.Add(new Vector2Int(_col + offset, _row - offset));
 
-                foreach (Move m in GetJumps(_row - 2 * offset, _col + 2 * offset, _initPos, alreadyJumped, _queen))
+                foreach (Move m in GetJumps(_row - 2 * offset, _col + 2 * offset, _initPos, alreadyJumped, _king))
                 {
-                    m.jumped.Add(new Vector2Int(_row - offset, _col + offset));
+                    m.jumped.Add(new Vector2Int(_col + offset, _row - offset));
                     availableJumps.Add(m);
                 }
 
@@ -148,26 +166,26 @@ public class Board
                 if (availableJumps.Count == jumpsCounter)
                 {
                     List<Vector2Int> jumped = new List<Vector2Int>(0);
-                    jumped.Add(new Vector2Int(_row - offset, _col + offset));
+                    jumped.Add(new Vector2Int(_col + offset, _row - offset));
 
-                    availableJumps.Add(new Move(_initPos, new Vector2Int(_row - 2 * offset, _col + 2 * offset), jumped));
+                    availableJumps.Add(new Move(_initPos, new Vector2Int(_col + 2 * offset, _row - 2 * offset), jumped));
                 }
             }
         }
 
         if (forward && left)
         {
-            if ((boardState[_row - 2 * offset, _col - 2 * offset] == Square.Empty || new Vector2(_row - 2 * offset, _col - 2 * offset) == _initPos) && (boardState[_row - offset, _col - offset] == adversaryChecker || boardState[_row - offset, _col - offset] == adversaryQueen) && !_alreadyJumped.Contains(new Vector2Int(_row - offset, _col - offset)))
+            if ((boardState[_row - 2 * offset, _col - 2 * offset] == Square.Empty || new Vector2(_col - 2 * offset, _row - 2 * offset) == _initPos) && (boardState[_row - offset, _col - offset] == adversaryChecker || boardState[_row - offset, _col - offset] == adversaryKing) && !_alreadyJumped.Contains(new Vector2Int(_col - offset, _row - offset)))
             {
                 jumpsCounter = availableJumps.Count;
 
                 List<Vector2Int> alreadyJumped = _alreadyJumped;
 
-                alreadyJumped.Add(new Vector2Int(_row - offset, _col - offset));
+                alreadyJumped.Add(new Vector2Int(_col - offset, _row - offset));
 
-                foreach (Move m in GetJumps(_row - 2 * offset, _col - 2 * offset, _initPos, alreadyJumped, _queen))
+                foreach (Move m in GetJumps(_row - 2 * offset, _col - 2 * offset, _initPos, alreadyJumped, _king))
                 {
-                    m.jumped.Add(new Vector2Int(_row - offset, _col - offset));
+                    m.jumped.Add(new Vector2Int(_col - offset, _row - offset));
                     availableJumps.Add(m);
                 }
 
@@ -176,28 +194,28 @@ public class Board
                 if (availableJumps.Count == jumpsCounter)
                 {
                     List<Vector2Int> jumped = new List<Vector2Int>(0);
-                    jumped.Add(new Vector2Int(_row - offset, _col - offset));
+                    jumped.Add(new Vector2Int(_col - offset, _row - offset));
 
-                    availableJumps.Add(new Move(_initPos, new Vector2Int(_row - 2 * offset, _col - 2 * offset), jumped));
+                    availableJumps.Add(new Move(_initPos, new Vector2Int(_col - 2 * offset, _row - 2 * offset), jumped));
                 }
             }
         }
 
-        if (_queen)
+        if (_king)
         {
             if (backward && right)
             {
-                if ((boardState[_row + 2 * offset, _col + 2 * offset] == Square.Empty || new Vector2(_row + 2 * offset, _col + 2 * offset) == _initPos) && (boardState[_row + offset, _col + offset] == adversaryChecker || boardState[_row + offset, _col + offset] == adversaryQueen) && !_alreadyJumped.Contains(new Vector2Int(_row + offset, _col + offset)))
+                if ((boardState[_row + 2 * offset, _col + 2 * offset] == Square.Empty || new Vector2(_col + 2 * offset, _row + 2 * offset) == _initPos) && (boardState[_row + offset, _col + offset] == adversaryChecker || boardState[_row + offset, _col + offset] == adversaryKing) && !_alreadyJumped.Contains(new Vector2Int(_col + offset, _row + offset)))
                 {
                     jumpsCounter = availableJumps.Count;
 
                     List<Vector2Int> alreadyJumped = _alreadyJumped;
 
-                    alreadyJumped.Add(new Vector2Int(_row + offset, _col + offset));
+                    alreadyJumped.Add(new Vector2Int(_col + offset, _row + offset));
 
-                    foreach (Move m in GetJumps(_row + 2 * offset, _col + 2 * offset, _initPos, alreadyJumped, _queen))
+                    foreach (Move m in GetJumps(_row + 2 * offset, _col + 2 * offset, _initPos, alreadyJumped, _king))
                     {
-                        m.jumped.Add(new Vector2Int(_row + offset, _col + offset));
+                        m.jumped.Add(new Vector2Int(_col + offset, _row + offset));
                         availableJumps.Add(m);
                     }
 
@@ -206,26 +224,26 @@ public class Board
                     if (availableJumps.Count == jumpsCounter)
                     {
                         List<Vector2Int> jumped = new List<Vector2Int>(0);
-                        jumped.Add(new Vector2Int(_row + offset, _col + offset));
+                        jumped.Add(new Vector2Int(_col + offset, _row + offset));
 
-                        availableJumps.Add(new Move(_initPos, new Vector2Int(_row + 2 * offset, _col + 2 * offset), jumped));
+                        availableJumps.Add(new Move(_initPos, new Vector2Int(_col + 2 * offset, _row + 2 * offset), jumped));
                     }
                 }
             }
 
             if (backward && left)
             {
-                if ((boardState[_row + 2 * offset, _col - 2 * offset] == Square.Empty || new Vector2(_row + 2 * offset, _col - 2 * offset) == _initPos) && (boardState[_row + offset, _col - offset] == adversaryChecker || boardState[_row + offset, _col - offset] == adversaryQueen) && !_alreadyJumped.Contains(new Vector2Int(_row + offset, _col - offset)))
+                if ((boardState[_row + 2 * offset, _col - 2 * offset] == Square.Empty || new Vector2(_col - 2 * offset, _row + 2 * offset) == _initPos) && (boardState[_row + offset, _col - offset] == adversaryChecker || boardState[_row + offset, _col - offset] == adversaryKing) && !_alreadyJumped.Contains(new Vector2Int(_col - offset, _row + offset)))
                 {
                     jumpsCounter = availableJumps.Count;
 
                     List<Vector2Int> alreadyJumped = _alreadyJumped;
 
-                    alreadyJumped.Add(new Vector2Int(_row + offset, _col - offset));
+                    alreadyJumped.Add(new Vector2Int(_col - offset, _row + offset));
 
-                    foreach (Move m in GetJumps(_row + 2 * offset, _col - 2 * offset, _initPos, alreadyJumped, _queen))
+                    foreach (Move m in GetJumps(_row + 2 * offset, _col - 2 * offset, _initPos, alreadyJumped, _king))
                     {
-                        m.jumped.Add(new Vector2Int(_row + offset, _col - offset));
+                        m.jumped.Add(new Vector2Int(_col - offset, _row + offset));
                         availableJumps.Add(m);
                     }
 
@@ -234,9 +252,9 @@ public class Board
                     if (availableJumps.Count == jumpsCounter)
                     {
                         List<Vector2Int> jumped = new List<Vector2Int>(0);
-                        jumped.Add(new Vector2Int(_row + offset, _col - offset));
+                        jumped.Add(new Vector2Int(_col - offset, _row + offset));
 
-                        availableJumps.Add(new Move(_initPos, new Vector2Int(_row + 2 * offset, _col - 2 * offset), jumped));
+                        availableJumps.Add(new Move(_initPos, new Vector2Int(_col - 2 * offset, _row + 2 * offset), jumped));
                     }
                 }
             }
@@ -245,7 +263,7 @@ public class Board
         return availableJumps;
     }
 
-    List<Move> GetMoves(int _row, int _col, bool _queen)
+    List<Move> GetMoves(int _row, int _col, bool _king)
     {
         List<Move> availableMoves = new List<Move>(0);
 
@@ -263,7 +281,7 @@ public class Board
         {
             if (boardState[_row - offset, _col + offset] == Square.Empty)
             {
-                availableMoves.Add(new Move(new Vector2Int(_row, _col), new Vector2Int(_row - offset, _col + offset)));
+                availableMoves.Add(new Move(new Vector2Int(_col, _row), new Vector2Int(_col + offset, _row - offset)));
             }
         }
 
@@ -271,17 +289,17 @@ public class Board
         {
             if (boardState[_row - offset, _col - offset] == Square.Empty)
             {
-                availableMoves.Add(new Move(new Vector2Int(_row, _col), new Vector2Int(_row - offset, _col - offset)));
+                availableMoves.Add(new Move(new Vector2Int(_col, _row), new Vector2Int(_col - offset, _row - offset)));
             }
         }
 
-        if (_queen)
+        if (_king)
         {
             if (backward && right)
             {
                 if (boardState[_row + offset, _col + offset] == Square.Empty)
                 {
-                    availableMoves.Add(new Move(new Vector2Int(_row, _col), new Vector2Int(_row + offset, _col + offset)));
+                    availableMoves.Add(new Move(new Vector2Int(_col, _row), new Vector2Int(_col + offset, _row + offset)));
                 }
             }
 
@@ -289,7 +307,7 @@ public class Board
             {
                 if (boardState[_row + offset, _col - offset] == Square.Empty)
                 {
-                    availableMoves.Add(new Move(new Vector2Int(_row, _col), new Vector2Int(_row + offset, _col - offset)));
+                    availableMoves.Add(new Move(new Vector2Int(_col, _row), new Vector2Int(_col - offset, _row + offset)));
                 }
             }
         }
@@ -299,18 +317,33 @@ public class Board
 
     public void MakeMove(Move _move)
     {
-        boardState[_move.to.x, _move.to.y] = boardState[_move.from.x, _move.from.y];
-        boardState[_move.from.x, _move.from.y] = Square.Empty;
+        boardState[_move.to.y, _move.to.x] = boardState[_move.from.y, _move.from.x];
+        boardState[_move.from.y, _move.from.x] = Square.Empty;
 
         foreach (Vector2Int p in _move.jumped)
         {
-            boardState[p.x, p.y] = Square.Empty;
+            boardState[p.y, p.x] = Square.Empty;
+        }
+
+        if(_move.to.y <= 0 || _move.to.y >= boardState.GetLength(0) - 1)
+        {
+            if (boardState[_move.to.y, _move.to.x] == Square.Black_Checker)
+            {
+                boardState[_move.to.y, _move.to.x] = Square.Black_King;
+            }
+            else if (boardState[_move.to.y, _move.to.x] == Square.White_Checker)
+            {
+                boardState[_move.to.y, _move.to.x] = Square.White_King;
+            }
         }
     }
 
-    public float Evaluate()
+    public float Evaluate(Turn _turn)
     {
-        return CheckersCount() * 1f + KingsCount() * 3f;
+        float score = CheckersCount() * 1f + KingsCount() * 3f;
+
+        if (_turn == Turn.Black) return score;
+        else return -score;
     }
 
     private float CheckersCount()
@@ -338,11 +371,11 @@ public class Board
 
         foreach (Square square in boardState)
         {
-            if (square == Square.Black_Queen)
+            if (square == Square.Black_King)
             {
                 score++;
             }
-            else if (square == Square.White_Queen)
+            else if (square == Square.White_King)
             {
                 score--;
             }
