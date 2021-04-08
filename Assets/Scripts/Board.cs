@@ -49,6 +49,59 @@ public class Board
         else turn = Turn.Black;
     }
 
+    public List<Move> GetPieceMoves(Vector2Int _piece)
+    {
+        List<Move> availableMoves = new List<Move>(0);
+
+        Square currentChecker, currentKing;
+
+        if (turn == Turn.Black)
+        {
+            currentChecker = Square.Black_Checker;
+            currentKing = Square.Black_King;
+        }
+        else
+        {
+            currentChecker = Square.White_Checker;
+            currentKing = Square.White_King;
+        }
+
+        if (boardState[_piece.y, _piece.x] == currentKing)
+        {
+            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), true))
+            {
+                availableMoves.Add(move);
+            }
+        }
+        else if (boardState[_piece.y, _piece.x] == currentChecker)
+        {
+            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), false))
+            {
+                availableMoves.Add(move);
+            }
+        }
+
+        if (availableMoves.Count == 0)
+        {
+            if (boardState[_piece.y, _piece.x] == currentKing)
+            {
+                foreach (Move move in GetMoves(_piece.y, _piece.x, true))
+                {
+                    availableMoves.Add(move);
+                }
+            }
+            else if (boardState[_piece.y, _piece.x] == currentChecker)
+            {
+                foreach (Move move in GetMoves(_piece.y, _piece.x, false))
+                {
+                    availableMoves.Add(move);
+                }
+            }
+        }
+
+        return availableMoves;
+    }
+
     public List<Move> GetAllMoves()
     {
         List<Move> availableMoves = new List<Move>(0);
@@ -146,7 +199,6 @@ public class Board
 
         if (forward && right)
         {
-            if(turn == Turn.Black) Debug.Log(_initPos);
             if ((boardState[_row - 2 * offset, _col + 2 * offset] == Square.Empty || new Vector2(_col + 2 * offset, _row - 2 * offset) == _initPos) && (boardState[_row - offset, _col + offset] == adversaryChecker || boardState[_row - offset, _col + offset] == adversaryKing) && !_alreadyJumped.Contains(new Vector2Int(_col + offset, _row - offset)))
             {
                 jumpsCounter = availableJumps.Count;

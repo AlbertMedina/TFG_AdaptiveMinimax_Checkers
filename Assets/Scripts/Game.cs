@@ -4,39 +4,154 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [Header("Prefabs")]
     [SerializeField] GameObject board;
     [SerializeField] GameObject blackChecker;
     [SerializeField] GameObject blackKing;
     [SerializeField] GameObject whiteChecker;
     [SerializeField] GameObject whiteKing;
 
-    struct AvailableMove
+    [Header("Settings")]
+    [SerializeField] GameMode gameMode;
+
+
+    private enum GameMode { Player_Black, Player_White, AI_vs_AI }
+
+    private struct AvailableMove
     {
         public Move move;
         public float score;
     }
 
-    Board gameBoard;
+    private Board gameBoard;
+
+    private Vector2Int selectedPiece;
+    private List<Move> selectedPieceMoves;
 
     void Start()
     {
         gameBoard = new Board();
+
+        selectedPiece = Vector2Int.zero;
+
+        selectedPieceMoves = new List<Move>(0);
 
         DrawBoard(gameBoard);
     }
 
     void Update()
     {
+        switch (gameMode)
+        {
+            case GameMode.Player_Black:
+
+                if(gameBoard.turn == Board.Turn.Black)
+                {
+                    PlayerTurn();
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 3);
+
+                        gameBoard.MakeMove(chosenMove.move);
+
+                        DrawMove(chosenMove.move);
+
+                        gameBoard.ChangeTurn();
+                    }
+                }
+
+                break;
+
+            case GameMode.Player_White:
+                break;
+            case GameMode.AI_vs_AI:
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 3);
+
+                    gameBoard.MakeMove(chosenMove.move);
+
+                    DrawMove(chosenMove.move);
+
+                    gameBoard.ChangeTurn();
+                }
+
+                break;
+        }
+    }
+
+    void PlayerTurn()
+    {
         if (Input.GetMouseButtonDown(0))
         {
-            AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 5);
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, 100.0f))
+            {
+                if(hit.transform.childCount > 0 && hit.transform.GetChild(0).tag == "BlackChecker")
+                {
+                    selectedPiece = GetPositionVector(hit.transform);
 
-            gameBoard.MakeMove(chosenMove.move);
+                    selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
 
-            DrawMove(chosenMove.move);
+                    Debug.Log(selectedPiece);
 
-            gameBoard.ChangeTurn();
+                    foreach (Move m in selectedPieceMoves)
+                    {
+                        Debug.Log(m.to);
+                    }
+                    //Debug.Log(hit.transform.name + ", " + hit.transform.parent.name);
+                }
+                else
+                {
+                    foreach (Move m in selectedPieceMoves)
+                    {
+                        if (m.to == GetPositionVector(hit.transform))
+                        {
+                            gameBoard.MakeMove(m);
+                            DrawMove(m);
+
+                            gameBoard.ChangeTurn();
+
+                            selectedPiece = Vector2Int.zero;
+
+                            selectedPieceMoves = new List<Move>(0);
+                        }
+                    }
+                }
+                
+                
+            }
         }
+    }
+
+    Vector2Int GetPositionVector(Transform t)
+    {
+        Vector2Int v = Vector2Int.zero;
+
+        for (int i = 0; i < t.parent.childCount; i++)
+        {
+            if (t.parent.GetChild(i) == t)
+            {
+                v.x = i;
+                break;
+            }
+        }       
+
+        for (int i = 0; i < t.parent.parent.childCount; i++)
+        {
+            if (t.parent.parent.GetChild(i) == t.parent)
+            {
+                v.y = i;
+                break;
+            }
+        }
+        
+        return v;
     }
 
     void DrawBoard(Board _board)
