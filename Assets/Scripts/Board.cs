@@ -22,18 +22,18 @@ public class Board
                                      {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty},
                                      {Square.Empty,         Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker},
                                      {Square.Black_Checker, Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty,           Square.Black_Checker,   Square.Empty} };
-        
+
         turn = Turn.Black;
 
 
-      /*boardState = new Square[,] { {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                     {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty} };*/
+        /*boardState = new Square[,] { {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
+                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty} };*/
 
     }
 
@@ -47,6 +47,41 @@ public class Board
     {
         if (turn == Turn.Black) turn = Turn.White;
         else turn = Turn.Black;
+    }
+
+    public List<Move> GetPieceJumps(Vector2Int _piece)
+    {
+        List<Move> availableJumps = new List<Move>(0);
+
+        Square currentChecker, currentKing;
+
+        if (turn == Turn.Black)
+        {
+            currentChecker = Square.Black_Checker;
+            currentKing = Square.Black_King;
+        }
+        else
+        {
+            currentChecker = Square.White_Checker;
+            currentKing = Square.White_King;
+        }
+
+        if (boardState[_piece.y, _piece.x] == currentKing)
+        {
+            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), true))
+            {
+                availableJumps.Add(move);
+            }
+        }
+        else if (boardState[_piece.y, _piece.x] == currentChecker)
+        {
+            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), false))
+            {
+                availableJumps.Add(move);
+            }
+        }
+
+        return availableJumps;
     }
 
     public List<Move> GetPieceMoves(Vector2Int _piece)
@@ -68,36 +103,19 @@ public class Board
 
         if (boardState[_piece.y, _piece.x] == currentKing)
         {
-            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), true))
+            foreach (Move move in GetMoves(_piece.y, _piece.x, true))
             {
                 availableMoves.Add(move);
             }
         }
         else if (boardState[_piece.y, _piece.x] == currentChecker)
         {
-            foreach (Move move in GetJumps(_piece.y, _piece.x, new Vector2Int(_piece.x, _piece.y), new List<Vector2Int>(0), false))
+            foreach (Move move in GetMoves(_piece.y, _piece.x, false))
             {
                 availableMoves.Add(move);
             }
         }
 
-        if (availableMoves.Count == 0)
-        {
-            if (boardState[_piece.y, _piece.x] == currentKing)
-            {
-                foreach (Move move in GetMoves(_piece.y, _piece.x, true))
-                {
-                    availableMoves.Add(move);
-                }
-            }
-            else if (boardState[_piece.y, _piece.x] == currentChecker)
-            {
-                foreach (Move move in GetMoves(_piece.y, _piece.x, false))
-                {
-                    availableMoves.Add(move);
-                }
-            }
-        }
 
         return availableMoves;
     }
@@ -106,36 +124,13 @@ public class Board
     {
         List<Move> availableMoves = new List<Move>(0);
 
-        Square currentChecker, currentKing;
-
-        if (turn == Turn.Black)
-        {
-            currentChecker = Square.Black_Checker;
-            currentKing = Square.Black_King;
-        }
-        else
-        {
-            currentChecker = Square.White_Checker;
-            currentKing = Square.White_King;
-        }
-
         for (int i = 0; i < boardState.GetLength(0); i++)
         {
             for (int j = 0; j < boardState.GetLength(1); j++)
             {
-                if (boardState[i, j] == currentKing)
+                foreach (Move move in GetPieceJumps(new Vector2Int(j, i)))
                 {
-                    foreach (Move move in GetJumps(i, j, new Vector2Int(j, i), new List<Vector2Int>(0), true))
-                    {
-                        availableMoves.Add(move);
-                    }
-                }
-                else if (boardState[i, j] == currentChecker)
-                {
-                    foreach (Move move in GetJumps(i, j, new Vector2Int(j, i), new List<Vector2Int>(0), false))
-                    {
-                        availableMoves.Add(move);
-                    }
+                    availableMoves.Add(move);
                 }
             }
         }
@@ -146,19 +141,9 @@ public class Board
             {
                 for (int j = 0; j < boardState.GetLength(1); j++)
                 {
-                    if (boardState[i, j] == currentKing)
+                    foreach (Move move in GetPieceMoves(new Vector2Int(j, i)))
                     {
-                        foreach (Move move in GetMoves(i, j, true))
-                        {
-                            availableMoves.Add(move);
-                        }
-                    }
-                    else if (boardState[i, j] == currentChecker)
-                    {
-                        foreach (Move move in GetMoves(i, j, false))
-                        {
-                            availableMoves.Add(move);
-                        }
+                        availableMoves.Add(move);
                     }
                 }
             }
@@ -377,7 +362,7 @@ public class Board
             boardState[p.y, p.x] = Square.Empty;
         }
 
-        if(_move.to.y <= 0 || _move.to.y >= boardState.GetLength(0) - 1)
+        if (_move.to.y <= 0 || _move.to.y >= boardState.GetLength(0) - 1)
         {
             if (boardState[_move.to.y, _move.to.x] == Square.Black_Checker)
             {
@@ -436,4 +421,3 @@ public class Board
         return score;
     }
 }
-

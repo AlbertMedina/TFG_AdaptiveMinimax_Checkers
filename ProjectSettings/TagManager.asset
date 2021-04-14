@@ -6,6 +6,8 @@ TagManager:
   tags:
   - BlackChecker
   - WhiteChecker
+  - BlackKing
+  - WhiteKing
   layers:
   - Default
   - TransparentFX

@@ -28,6 +28,8 @@ public class Game : MonoBehaviour
     private Vector2Int selectedPiece;
     private List<Move> selectedPieceMoves;
 
+    private bool playerCanJump;
+
     void Start()
     {
         gameBoard = new Board();
@@ -35,6 +37,8 @@ public class Game : MonoBehaviour
         selectedPiece = Vector2Int.zero;
 
         selectedPieceMoves = new List<Move>(0);
+
+        playerCanJump = false;
 
         DrawBoard(gameBoard);
     }
@@ -59,7 +63,7 @@ public class Game : MonoBehaviour
 
                         DrawMove(chosenMove.move);
 
-                        gameBoard.ChangeTurn();
+                        ChangeTurn();
                     }
                 }
 
@@ -77,7 +81,7 @@ public class Game : MonoBehaviour
 
                     DrawMove(chosenMove.move);
 
-                    gameBoard.ChangeTurn();
+                    ChangeTurn();
                 }
 
                 break;
@@ -92,30 +96,26 @@ public class Game : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100.0f))
             {
-                if(hit.transform.childCount > 0 && (hit.transform.GetChild(0).tag == "BlackChecker" || hit.transform.GetChild(0).tag == "BlackKing"))
+                if (hit.transform.childCount > 0 && (hit.transform.GetChild(0).tag == "BlackChecker" || hit.transform.GetChild(0).tag == "BlackKing"))
                 {
-                    selectedPiece = GetPositionVector(hit.transform);
+                    selectedPiece = TransformToVector(hit.transform);
 
-                    selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
+                    if (playerCanJump) selectedPieceMoves = gameBoard.GetPieceJumps(selectedPiece);
+                    else selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
 
-                    Debug.Log(selectedPiece);
-
-                    foreach (Move m in selectedPieceMoves)
-                    {
-                        Debug.Log(m.to);
-                    }
-                    //Debug.Log(hit.transform.name + ", " + hit.transform.parent.name);
+                    DrawIndicators();
                 }
                 else
                 {
                     foreach (Move m in selectedPieceMoves)
                     {
-                        if (m.to == GetPositionVector(hit.transform))
+                        if (m.to == TransformToVector(hit.transform))
                         {
                             gameBoard.MakeMove(m);
                             DrawMove(m);
+                            DeleteIndicators();
 
-                            gameBoard.ChangeTurn();
+                            ChangeTurn();
 
                             selectedPiece = Vector2Int.zero;
 
@@ -129,7 +129,32 @@ public class Game : MonoBehaviour
         }
     }
 
-    Vector2Int GetPositionVector(Transform t)
+    void ChangeTurn()
+    {
+        gameBoard.ChangeTurn();
+
+        if (gameMode == GameMode.Player_Black && gameBoard.turn == Board.Turn.Black)
+        {  
+            playerCanJump = false;
+
+            for (int i = 0; i < board.transform.childCount; i++)
+            {
+                for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
+                {
+                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackChecker" || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackKing"))
+                    {        
+                        if (gameBoard.GetPieceJumps(new Vector2Int(j, i)).Count > 0)
+                        {
+                            playerCanJump = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Vector2Int TransformToVector(Transform t)
     {
         Vector2Int v = Vector2Int.zero;
 
@@ -152,6 +177,47 @@ public class Game : MonoBehaviour
         }
         
         return v;
+    }
+
+    Transform VectorToTransform(Vector2Int v)
+    {
+        return board.transform.GetChild(v.y).GetChild(v.x);
+    }
+
+    void DrawIndicators()
+    {
+        DeleteIndicators();
+        
+        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
+        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
+
+        VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
+
+        foreach (Move m in selectedPieceMoves)
+        {
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().color = Color.green;
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().enabled = true;
+
+            foreach (Vector2Int v in m.jumped)
+            {
+                VectorToTransform(v).GetComponent<SpriteRenderer>().color = Color.red;
+                VectorToTransform(v).GetComponent<SpriteRenderer>().enabled = true;
+            }
+        }
+    }
+
+    void DeleteIndicators()
+    {
+        for (int i = 0; i < board.transform.childCount; i++)
+        {
+            for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
+            {
+                if (board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>() != null)
+                {
+                    board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>().enabled = false;
+                }
+            }
+        }
     }
 
     void DrawBoard(Board _board)
