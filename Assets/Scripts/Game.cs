@@ -92,7 +92,7 @@ public class Game : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100.0f))
             {
-                if(hit.transform.childCount > 0 && hit.transform.GetChild(0).tag == "BlackChecker")
+                if(hit.transform.childCount > 0 && (hit.transform.GetChild(0).tag == "BlackChecker" || hit.transform.GetChild(0).tag == "BlackKing"))
                 {
                     selectedPiece = GetPositionVector(hit.transform);
 
