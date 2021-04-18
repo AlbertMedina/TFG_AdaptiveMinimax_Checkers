@@ -116,7 +116,6 @@ public class Board
             }
         }
 
-
         return availableMoves;
     }
 

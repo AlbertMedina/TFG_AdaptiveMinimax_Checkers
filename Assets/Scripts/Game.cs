@@ -14,7 +14,6 @@ public class Game : MonoBehaviour
     [Header("Settings")]
     [SerializeField] GameMode gameMode;
 
-
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
 
     private struct AvailableMove
@@ -30,6 +29,8 @@ public class Game : MonoBehaviour
 
     private bool playerCanJump;
 
+    private bool gameOver;
+
     void Start()
     {
         gameBoard = new Board();
@@ -40,24 +41,58 @@ public class Game : MonoBehaviour
 
         playerCanJump = false;
 
+        gameOver = false;
+
         DrawBoard(gameBoard);
     }
 
     void Update()
     {
-        switch (gameMode)
+        if (!gameOver)
         {
-            case GameMode.Player_Black:
+            switch (gameMode)
+            {
+                case GameMode.Player_Black:
 
-                if(gameBoard.turn == Board.Turn.Black)
-                {
-                    PlayerTurn();
-                }
-                else
-                {
+                    if (gameBoard.turn == Board.Turn.Black)
+                    {
+                        PlayerTurn();
+                    }
+                    else
+                    {
+                        if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 3);
+
+                            if (chosenMove.move == null)
+                            {
+                                GameOver();
+                                break;
+                            }
+
+                            gameBoard.MakeMove(chosenMove.move);
+
+                            DrawMove(chosenMove.move);
+
+                            ChangeTurn();
+                        }
+                    }
+
+                    break;
+
+                case GameMode.Player_White:
+                    break;
+                case GameMode.AI_vs_AI:
+
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
                         AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 3);
+
+                        if (chosenMove.move == null)
+                        {
+                            GameOver();
+                            break;
+                        }
 
                         gameBoard.MakeMove(chosenMove.move);
 
@@ -65,27 +100,16 @@ public class Game : MonoBehaviour
 
                         ChangeTurn();
                     }
-                }
 
-                break;
-
-            case GameMode.Player_White:
-                break;
-            case GameMode.AI_vs_AI:
-
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    AvailableMove chosenMove = Minimax(gameBoard, gameBoard.turn, 0, 3);
-
-                    gameBoard.MakeMove(chosenMove.move);
-
-                    DrawMove(chosenMove.move);
-
-                    ChangeTurn();
-                }
-
-                break;
+                    break;
+            }
         }
+    }
+
+    void GameOver()
+    {
+        Debug.Log("GameOver " + gameBoard.turn);
+        gameOver = true;
     }
 
     void PlayerTurn()
@@ -123,8 +147,6 @@ public class Game : MonoBehaviour
                         }
                     }
                 }
-                
-                
             }
         }
     }
@@ -151,6 +173,19 @@ public class Game : MonoBehaviour
                     }
                 }
             }
+
+            for (int i = 0; i < board.transform.childCount; i++)
+            {
+                for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
+                {
+                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackChecker" || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackKing"))
+                    {
+                        if (gameBoard.GetPieceMoves(new Vector2Int(j, i)).Count > 0) return;
+                    }
+                }
+            }
+
+            GameOver();
         }
     }
 
@@ -317,8 +352,6 @@ public class Game : MonoBehaviour
                     bestMove.move = m;
                 }
             }
-
-            //if(_currentDepth == 0) Debug.Log(currentMove.score);
         }
 
         return bestMove;
