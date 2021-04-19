@@ -16,9 +16,10 @@ public class GameManager : MonoBehaviour
 
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
 
-    
-
     private Board gameBoard;
+
+    private string checkersTag;
+    private string kingsTag;
 
     private Vector2Int selectedPiece;
     private List<Move> selectedPieceMoves;
@@ -30,6 +31,17 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gameBoard = new Board();
+
+        if(gameMode == GameMode.Player_Black)
+        {
+            checkersTag = "BlackChecker";
+            kingsTag = "BlackKing";
+        }
+        else
+        {
+            checkersTag = "WhiteChecker";
+            kingsTag = "WhiteKing";
+        }
 
         selectedPiece = Vector2Int.zero;
 
@@ -77,6 +89,31 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case GameMode.Player_White:
+
+                    if (gameBoard.turn == Board.Turn.White)
+                    {
+                        PlayerTurn();
+                    }
+                    else
+                    {
+                        if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+
+                            if (chosenMove.move == null)
+                            {
+                                GameOver();
+                                break;
+                            }
+
+                            gameBoard.MakeMove(chosenMove.move);
+
+                            DrawMove(chosenMove.move);
+
+                            ChangeTurn();
+                        }
+                    }
+
                     break;
                 case GameMode.AI_vs_AI:
 
@@ -116,7 +153,7 @@ public class GameManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100.0f))
             {
-                if (hit.transform.childCount > 0 && (hit.transform.GetChild(0).tag == "BlackChecker" || hit.transform.GetChild(0).tag == "BlackKing"))
+                if (hit.transform.childCount > 0 && (hit.transform.GetChild(0).tag == checkersTag || hit.transform.GetChild(0).tag == kingsTag))
                 {
                     selectedPiece = TransformToVector(hit.transform);
 
@@ -151,7 +188,7 @@ public class GameManager : MonoBehaviour
     {
         gameBoard.ChangeTurn();
 
-        if (gameMode == GameMode.Player_Black && gameBoard.turn == Board.Turn.Black)
+        if ((gameMode == GameMode.Player_Black && gameBoard.turn == Board.Turn.Black) || (gameMode == GameMode.Player_White && gameBoard.turn == Board.Turn.White))
         {  
             playerCanJump = false;
 
@@ -159,7 +196,7 @@ public class GameManager : MonoBehaviour
             {
                 for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
                 {
-                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackChecker" || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackKing"))
+                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == checkersTag || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == kingsTag))
                     {        
                         if (gameBoard.GetPieceJumps(new Vector2Int(j, i)).Count > 0)
                         {
@@ -174,7 +211,7 @@ public class GameManager : MonoBehaviour
             {
                 for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
                 {
-                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackChecker" || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == "BlackKing"))
+                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == checkersTag || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == kingsTag))
                     {
                         if (gameBoard.GetPieceMoves(new Vector2Int(j, i)).Count > 0) return;
                     }
