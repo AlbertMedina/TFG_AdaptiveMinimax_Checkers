@@ -70,7 +70,8 @@ public class GameManager : MonoBehaviour
                     {
                         if (Input.GetKeyDown(KeyCode.Space))
                         {
-                            Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                            //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 3, -Mathf.Infinity, Mathf.Infinity);
 
                             if (chosenMove.move == null)
                             {
@@ -98,7 +99,8 @@ public class GameManager : MonoBehaviour
                     {
                         if (Input.GetKeyDown(KeyCode.Space))
                         {
-                            Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                            //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 3, -Mathf.Infinity, Mathf.Infinity);
 
                             if (chosenMove.move == null)
                             {
@@ -119,7 +121,8 @@ public class GameManager : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.Space))
                     {
-                        Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                        //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+                        Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 3, -Mathf.Infinity, Mathf.Infinity);
 
                         if (chosenMove.move == null)
                         {
