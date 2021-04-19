@@ -39,8 +39,8 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.turn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black);
+            if (_board.turn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
 
             newBoard.MakeMove(m);
 

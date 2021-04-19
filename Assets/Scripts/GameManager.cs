@@ -30,17 +30,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        gameBoard = new Board();
-
-        if(gameMode == GameMode.Player_Black)
-        {
-            checkersTag = "BlackChecker";
-            kingsTag = "BlackKing";
-        }
-        else
+        if(gameMode == GameMode.Player_White)
         {
             checkersTag = "WhiteChecker";
             kingsTag = "WhiteKing";
+            gameBoard = new Board(false);
+        }
+        else
+        {
+            checkersTag = "BlackChecker";
+            kingsTag = "BlackKing";
+            gameBoard = new Board(true);
         }
 
         selectedPiece = Vector2Int.zero;
