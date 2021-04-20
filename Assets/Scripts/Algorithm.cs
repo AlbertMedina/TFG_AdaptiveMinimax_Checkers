@@ -10,7 +10,7 @@ public class Algorithm
         public float score;
     }
 
-    public static AvailableMove Minimax(Board _board, Board.Turn _turn, int _currentDepth, int _maxDepth)
+    public static AvailableMove Minimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth)
     {
         AvailableMove bestMove = new AvailableMove();
 
@@ -18,7 +18,7 @@ public class Algorithm
 
         if (_currentDepth >= _maxDepth)
         {
-            bestMove.score = _board.Evaluate(_turn);
+            bestMove.score = _board.Evaluate(_currentTurn);
             return bestMove;
         }
 
@@ -26,11 +26,11 @@ public class Algorithm
 
         if (availableMoves.Count == 0)
         {
-            bestMove.score = _board.Evaluate(_turn);
+            bestMove.score = _board.Evaluate(_currentTurn);
             return bestMove;
         }
 
-        if (_turn == _board.turn) bestMove.score = -Mathf.Infinity;
+        if (_currentTurn == _board.currentTurn) bestMove.score = -Mathf.Infinity;
         else bestMove.score = Mathf.Infinity;
 
         AvailableMove currentMove = new AvailableMove();
@@ -39,14 +39,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.turn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
             else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
 
             newBoard.MakeMove(m);
 
-            currentMove = Minimax(newBoard, _turn, _currentDepth + 1, _maxDepth);
+            currentMove = Minimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth);
 
-            if (_turn == _board.turn)
+            if (_currentTurn == _board.currentTurn)
             {
                 if (currentMove.score > bestMove.score)
                 {
@@ -67,7 +67,7 @@ public class Algorithm
         return bestMove;
     }
 
-    public static AvailableMove ABMinimax(Board _board, Board.Turn _turn, int _currentDepth, int _maxDepth, float _alpha, float _beta)
+    public static AvailableMove ABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta)
     {
         AvailableMove bestMove = new AvailableMove();
 
@@ -75,7 +75,7 @@ public class Algorithm
 
         if (_currentDepth >= _maxDepth)
         {
-            bestMove.score = _board.Evaluate(_turn);
+            bestMove.score = _board.Evaluate(_currentTurn);
             return bestMove;
         }
 
@@ -83,11 +83,11 @@ public class Algorithm
 
         if (availableMoves.Count == 0)
         {
-            bestMove.score = _board.Evaluate(_turn);
+            bestMove.score = _board.Evaluate(_currentTurn);
             return bestMove;
         }
 
-        if (_turn == _board.turn) bestMove.score = -Mathf.Infinity;
+        if (_currentTurn == _board.currentTurn) bestMove.score = -Mathf.Infinity;
         else bestMove.score = Mathf.Infinity;
 
         AvailableMove currentMove = new AvailableMove();
@@ -96,14 +96,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.turn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
             else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
 
             newBoard.MakeMove(m);
 
-            currentMove = ABMinimax(newBoard, _turn, _currentDepth + 1, _maxDepth, _alpha, _beta);
+            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta);
 
-            if (_turn == _board.turn)
+            if (_currentTurn == _board.currentTurn)
             {
                 if (currentMove.score > bestMove.score)
                 {

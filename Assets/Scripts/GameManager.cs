@@ -62,14 +62,14 @@ public class GameManager : MonoBehaviour
             {
                 case GameMode.Player_Black:
 
-                    if (gameBoard.turn == Board.Turn.Black) PlayerTurn();
+                    if (gameBoard.currentTurn == Board.Turn.Black) PlayerTurn();
                     else AITurn();
 
                     break;
 
                 case GameMode.Player_White:
 
-                    if (gameBoard.turn == Board.Turn.White) PlayerTurn();
+                    if (gameBoard.currentTurn == Board.Turn.White) PlayerTurn();
                     else AITurn();
 
                     break;
@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
-            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
+            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.currentTurn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
 
             if (chosenMove.move == null)
             {
@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
     {
         gameBoard.ChangeTurn();
 
-        if ((gameMode == GameMode.Player_Black && gameBoard.turn == Board.Turn.Black) || (gameMode == GameMode.Player_White && gameBoard.turn == Board.Turn.White))
+        if ((gameMode == GameMode.Player_Black && gameBoard.currentTurn == Board.Turn.Black) || (gameMode == GameMode.Player_White && gameBoard.currentTurn == Board.Turn.White))
         {  
             playerCanJump = false;
 
@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GameOver " + gameBoard.turn);
+        Debug.Log("GameOver " + gameBoard.currentTurn);
         gameOver = true;
     }
     #endregion
@@ -274,22 +274,22 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Math
-    Vector2Int TransformToVector(Transform t)
+    Vector2Int TransformToVector(Transform _t)
     {
         Vector2Int v = Vector2Int.zero;
 
-        for (int i = 0; i < t.parent.childCount; i++)
+        for (int i = 0; i < _t.parent.childCount; i++)
         {
-            if (t.parent.GetChild(i) == t)
+            if (_t.parent.GetChild(i) == _t)
             {
                 v.x = i;
                 break;
             }
         }
 
-        for (int i = 0; i < t.parent.parent.childCount; i++)
+        for (int i = 0; i < _t.parent.parent.childCount; i++)
         {
-            if (t.parent.parent.GetChild(i) == t.parent)
+            if (_t.parent.parent.GetChild(i) == _t.parent)
             {
                 v.y = i;
                 break;
@@ -299,9 +299,9 @@ public class GameManager : MonoBehaviour
         return v;
     }
 
-    Transform VectorToTransform(Vector2Int v)
+    Transform VectorToTransform(Vector2Int _v)
     {
-        return board.transform.GetChild(v.y).GetChild(v.x);
+        return board.transform.GetChild(_v.y).GetChild(_v.x);
     }
     #endregion
 }

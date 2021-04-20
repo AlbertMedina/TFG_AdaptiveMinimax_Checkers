@@ -10,7 +10,7 @@ public class Board
 
     public enum Turn { Black, White }
 
-    public Turn turn;
+    public Turn currentTurn;
 
     public bool playerBlack;
 
@@ -39,7 +39,7 @@ public class Board
                                          {Square.White_Checker, Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty} };
         }
   
-        turn = Turn.Black;
+        currentTurn = Turn.Black;
         playerBlack = _playerBlack;
 
         /*boardState = new Square[,] { {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
@@ -53,20 +53,18 @@ public class Board
 
     }
 
-    public Board(Square[,] _board, Turn _turn, bool _playerBlack)
+    public Board(Square[,] _boardState, Turn _currentTurn, bool _playerBlack)
     {
-        boardState = _board;
-        turn = _turn;
+        boardState = _boardState;
+        currentTurn = _currentTurn;
         playerBlack = _playerBlack;
     }
 
     public void ChangeTurn()
     {
-        if (turn == Turn.Black) turn = Turn.White;
-        else turn = Turn.Black;
+        if (currentTurn == Turn.Black) currentTurn = Turn.White;
+        else currentTurn = Turn.Black;
     }
-
-    
 
     public List<Move> GetAllMoves()
     {
@@ -106,7 +104,7 @@ public class Board
 
         Square currentChecker, currentKing;
 
-        if (turn == Turn.Black)
+        if (currentTurn == Turn.Black)
         {
             currentChecker = Square.Black_Checker;
             currentKing = Square.Black_King;
@@ -141,7 +139,7 @@ public class Board
 
         Square currentChecker, currentKing;
 
-        if (turn == Turn.Black)
+        if (currentTurn == Turn.Black)
         {
             currentChecker = Square.Black_Checker;
             currentKing = Square.Black_King;
@@ -176,12 +174,12 @@ public class Board
 
         int offset;
 
-        if ((turn == Turn.Black && playerBlack) || (turn == Turn.White && !playerBlack)) offset = 1;
+        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack)) offset = 1;
         else offset = -1;
 
         Square adversaryChecker, adversaryKing;
 
-        if (turn == Turn.Black)
+        if (currentTurn == Turn.Black)
         {
             adversaryChecker = Square.White_Checker;
             adversaryKing = Square.White_King;
@@ -323,7 +321,7 @@ public class Board
 
         int offset;
 
-        if ((turn == Turn.Black && playerBlack) || (turn == Turn.White && !playerBlack)) offset = 1;
+        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack)) offset = 1;
         else offset = -1;
 
         bool forward = _row - offset >= 0 && _row - offset < boardState.GetLength(0);
@@ -392,11 +390,11 @@ public class Board
         }
     }
 
-    public float Evaluate(Turn _turn)
+    public float Evaluate(Turn _currentTurn)
     {
         float score = CheckersCount() * 1f + KingsCount() * 3f;
 
-        if (_turn == Turn.Black) return score;
+        if (_currentTurn == Turn.Black) return score;
         else return -score;
     }
 
