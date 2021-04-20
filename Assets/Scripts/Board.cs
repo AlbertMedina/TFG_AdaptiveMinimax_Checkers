@@ -66,6 +66,40 @@ public class Board
         else turn = Turn.Black;
     }
 
+    
+
+    public List<Move> GetAllMoves()
+    {
+        List<Move> availableMoves = new List<Move>(0);
+
+        for (int i = 0; i < boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < boardState.GetLength(1); j++)
+            {
+                foreach (Move move in GetPieceJumps(new Vector2Int(j, i)))
+                {
+                    availableMoves.Add(move);
+                }
+            }
+        }
+
+        if (availableMoves.Count == 0)
+        {
+            for (int i = 0; i < boardState.GetLength(0); i++)
+            {
+                for (int j = 0; j < boardState.GetLength(1); j++)
+                {
+                    foreach (Move move in GetPieceMoves(new Vector2Int(j, i)))
+                    {
+                        availableMoves.Add(move);
+                    }
+                }
+            }
+        }
+
+        return availableMoves;
+    }
+
     public List<Move> GetPieceJumps(Vector2Int _piece)
     {
         List<Move> availableJumps = new List<Move>(0);
@@ -135,39 +169,6 @@ public class Board
 
         return availableMoves;
     }
-
-    public List<Move> GetAllMoves()
-    {
-        List<Move> availableMoves = new List<Move>(0);
-
-        for (int i = 0; i < boardState.GetLength(0); i++)
-        {
-            for (int j = 0; j < boardState.GetLength(1); j++)
-            {
-                foreach (Move move in GetPieceJumps(new Vector2Int(j, i)))
-                {
-                    availableMoves.Add(move);
-                }
-            }
-        }
-
-        if (availableMoves.Count == 0)
-        {
-            for (int i = 0; i < boardState.GetLength(0); i++)
-            {
-                for (int j = 0; j < boardState.GetLength(1); j++)
-                {
-                    foreach (Move move in GetPieceMoves(new Vector2Int(j, i)))
-                    {
-                        availableMoves.Add(move);
-                    }
-                }
-            }
-        }
-
-        return availableMoves;
-    }
-
 
     List<Move> GetJumps(int _row, int _col, Vector2Int _initPos, List<Vector2Int> _alreadyJumped, bool _king)
     {

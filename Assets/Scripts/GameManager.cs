@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
 
         gameOver = false;
 
-        DrawBoard(gameBoard);
+        StartBoard(gameBoard);
     }
 
     void Update()
@@ -62,92 +62,27 @@ public class GameManager : MonoBehaviour
             {
                 case GameMode.Player_Black:
 
-                    if (gameBoard.turn == Board.Turn.Black)
-                    {
-                        PlayerTurn();
-                    }
-                    else
-                    {
-                        if (Input.GetKeyDown(KeyCode.Space))
-                        {
-                            //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
-                            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 9, -Mathf.Infinity, Mathf.Infinity);
-
-                            if (chosenMove.move == null)
-                            {
-                                GameOver();
-                                break;
-                            }
-
-                            gameBoard.MakeMove(chosenMove.move);
-
-                            DrawMove(chosenMove.move);
-
-                            ChangeTurn();
-                        }
-                    }
+                    if (gameBoard.turn == Board.Turn.Black) PlayerTurn();
+                    else AITurn();
 
                     break;
 
                 case GameMode.Player_White:
 
-                    if (gameBoard.turn == Board.Turn.White)
-                    {
-                        PlayerTurn();
-                    }
-                    else
-                    {
-                        if (Input.GetKeyDown(KeyCode.Space))
-                        {
-                            //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
-                            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 3, -Mathf.Infinity, Mathf.Infinity);
-
-                            if (chosenMove.move == null)
-                            {
-                                GameOver();
-                                break;
-                            }
-
-                            gameBoard.MakeMove(chosenMove.move);
-
-                            DrawMove(chosenMove.move);
-
-                            ChangeTurn();
-                        }
-                    }
+                    if (gameBoard.turn == Board.Turn.White) PlayerTurn();
+                    else AITurn();
 
                     break;
                 case GameMode.AI_vs_AI:
 
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
-                        Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
-
-                        if (chosenMove.move == null)
-                        {
-                            GameOver();
-                            break;
-                        }
-
-                        gameBoard.MakeMove(chosenMove.move);
-
-                        DrawMove(chosenMove.move);
-
-                        ChangeTurn();
-                    }
+                    AITurn();
 
                     break;
             }
         }
-    }
+    }  
 
-    void GameOver()
-    {
-        Debug.Log("GameOver " + gameBoard.turn);
-        gameOver = true;
-    }
-
+    #region Turn
     void PlayerTurn()
     {
         if (Input.GetMouseButtonDown(0))
@@ -163,7 +98,7 @@ public class GameManager : MonoBehaviour
                     if (playerCanJump) selectedPieceMoves = gameBoard.GetPieceJumps(selectedPiece);
                     else selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
 
-                    DrawIndicators();
+                    ShowHelpers();
                 }
                 else
                 {
@@ -172,8 +107,8 @@ public class GameManager : MonoBehaviour
                         if (m.to == TransformToVector(hit.transform))
                         {
                             gameBoard.MakeMove(m);
-                            DrawMove(m);
-                            DeleteIndicators();
+                            UpdateBoard(m);
+                            RemoveHelpers();
 
                             ChangeTurn();
 
@@ -184,6 +119,27 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    void AITurn()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //Algorithm.AvailableMove chosenMove = Algorithm.Minimax(gameBoard, gameBoard.turn, 0, 3);
+            Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.turn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
+
+            if (chosenMove.move == null)
+            {
+                GameOver();
+                return;
+            }
+
+            gameBoard.MakeMove(chosenMove.move);
+
+            UpdateBoard(chosenMove.move);
+
+            ChangeTurn();
         }
     }
 
@@ -225,73 +181,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    Vector2Int TransformToVector(Transform t)
+    void GameOver()
     {
-        Vector2Int v = Vector2Int.zero;
-
-        for (int i = 0; i < t.parent.childCount; i++)
-        {
-            if (t.parent.GetChild(i) == t)
-            {
-                v.x = i;
-                break;
-            }
-        }       
-
-        for (int i = 0; i < t.parent.parent.childCount; i++)
-        {
-            if (t.parent.parent.GetChild(i) == t.parent)
-            {
-                v.y = i;
-                break;
-            }
-        }
-        
-        return v;
+        Debug.Log("GameOver " + gameBoard.turn);
+        gameOver = true;
     }
+    #endregion
 
-    Transform VectorToTransform(Vector2Int v)
-    {
-        return board.transform.GetChild(v.y).GetChild(v.x);
-    }
-
-    void DrawIndicators()
-    {
-        DeleteIndicators();
-        
-        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
-        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
-
-        VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
-
-        foreach (Move m in selectedPieceMoves)
-        {
-            VectorToTransform(m.to).GetComponent<SpriteRenderer>().color = Color.green;
-            VectorToTransform(m.to).GetComponent<SpriteRenderer>().enabled = true;
-
-            foreach (Vector2Int v in m.jumped)
-            {
-                VectorToTransform(v).GetComponent<SpriteRenderer>().color = Color.red;
-                VectorToTransform(v).GetComponent<SpriteRenderer>().enabled = true;
-            }
-        }
-    }
-
-    void DeleteIndicators()
-    {
-        for (int i = 0; i < board.transform.childCount; i++)
-        {
-            for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
-            {
-                if (board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>() != null)
-                {
-                    board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>().enabled = false;
-                }
-            }
-        }
-    }
-
-    void DrawBoard(Board _board)
+    #region Board
+    void StartBoard(Board _board)
     {
         for (int i = 0; i < _board.boardState.GetLength(0); i++)
         {
@@ -310,7 +208,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void DrawMove(Move _move)
+    void UpdateBoard(Move _move)
     {
         board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.position = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position;
         board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.parent = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;
@@ -335,4 +233,75 @@ public class GameManager : MonoBehaviour
             Destroy(board.transform.GetChild(jumped.y).GetChild(jumped.x).GetChild(0).gameObject);
         }
     }
+    #endregion
+
+    #region Helpers
+    void ShowHelpers()
+    {
+        RemoveHelpers();
+
+        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
+        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
+
+        VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
+
+        foreach (Move m in selectedPieceMoves)
+        {
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().color = Color.green;
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().enabled = true;
+
+            foreach (Vector2Int v in m.jumped)
+            {
+                VectorToTransform(v).GetComponent<SpriteRenderer>().color = Color.red;
+                VectorToTransform(v).GetComponent<SpriteRenderer>().enabled = true;
+            }
+        }
+    }
+
+    void RemoveHelpers()
+    {
+        for (int i = 0; i < board.transform.childCount; i++)
+        {
+            for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
+            {
+                if (board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>() != null)
+                {
+                    board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>().enabled = false;
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Math
+    Vector2Int TransformToVector(Transform t)
+    {
+        Vector2Int v = Vector2Int.zero;
+
+        for (int i = 0; i < t.parent.childCount; i++)
+        {
+            if (t.parent.GetChild(i) == t)
+            {
+                v.x = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < t.parent.parent.childCount; i++)
+        {
+            if (t.parent.parent.GetChild(i) == t.parent)
+            {
+                v.y = i;
+                break;
+            }
+        }
+
+        return v;
+    }
+
+    Transform VectorToTransform(Vector2Int v)
+    {
+        return board.transform.GetChild(v.y).GetChild(v.x);
+    }
+    #endregion
 }

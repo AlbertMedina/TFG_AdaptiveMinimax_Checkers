@@ -21,9 +21,4 @@ public class Move
         to = _to;
         jumped = _jumped;
     }
-
-    public void DebugMove()
-    {
-        Debug.Log("From " + from.ToString() + " to " + to.ToString() + " jumping " + jumped.Count + " pieces");
-    }
 }
