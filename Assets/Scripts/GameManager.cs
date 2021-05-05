@@ -14,6 +14,11 @@ public class GameManager : MonoBehaviour
     [Header("Settings")]
     [SerializeField] GameMode gameMode;
 
+    [Header("AI")]
+    [SerializeField] float minimumThinkingTime;
+    [SerializeField] float maximumThinkingTime;
+    [SerializeField] int initialSearchingDepth;
+
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
 
     private Board gameBoard;
@@ -27,6 +32,8 @@ public class GameManager : MonoBehaviour
     private bool playerCanJump;
 
     private bool gameOver;
+
+    private int maxSearchDepth;
 
     void Start()
     {
@@ -50,6 +57,8 @@ public class GameManager : MonoBehaviour
         playerCanJump = false;
 
         gameOver = false;
+
+        maxSearchDepth = initialSearchingDepth;
 
         StartBoard(gameBoard);
     }
@@ -126,8 +135,14 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, 3);
-            Algorithm.AvailableMove chosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
+            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
+
+            //Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchDepth);
+            Algorithm.AvailableMove chosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchDepth, -Mathf.Infinity, Mathf.Infinity);
+
+            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime) maxSearchDepth++;
+            else if (maxSearchDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchDepth--;
+            Debug.Log(maxSearchDepth);
 
             if (chosenMove.move == null)
             {
