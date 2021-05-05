@@ -126,8 +126,8 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, 3);
-            //Algorithm.AvailableMove chosenMove = Algorithm.ABMinimax(gameBoard, gameBoard.currentTurn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
+            //Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, 3);
+            Algorithm.AvailableMove chosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, 7, -Mathf.Infinity, Mathf.Infinity);
 
             if (chosenMove.move == null)
             {
