@@ -318,19 +318,16 @@ public class Algorithm
             sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
         }
 
-        sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
+        foreach (AvailableMove sm in sortedMoves) Debug.Log(sm.score);
 
-        foreach (AvailableMove am in sortedMoves) Debug.Log(am.score);
-
-        if (availableMoves.Count == 1)
+        if (sortedMoves.Count == 1)
         {
-            return availableMoves[0];
+            return sortedMoves[0];
         }
         else
         {
-            Debug.Log("i = " + (availableMoves.Count - 1) * (int)_difficultyRate / 100);
-            return availableMoves[(availableMoves.Count - 1) * (int)_difficultyRate / 100];
-            
+            Debug.Log("i = " + (sortedMoves.Count - 1) * (int)_difficultyRate / 100);
+            return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
         }
     }
 }
