@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Linq;
+
 public class Algorithm
 {
     public struct AvailableMove
@@ -265,6 +267,70 @@ public class Algorithm
         else
         {
             return bestMoves[0];
+        }
+    }
+
+    public static AvailableMove MyMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate)
+    {
+        if (_currentDepth >= _maxDepth)
+        {
+            return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
+        }
+
+        List<Move> moves = _board.GetAllMoves();
+
+        //Debug.Log(availableMoves.Count);
+
+        if (moves.Count == 0)
+        {
+            return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
+        }
+
+        List<AvailableMove> availableMoves = new List<AvailableMove>(0);
+
+        //if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
+        //else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+
+        AvailableMove currentMove = new AvailableMove();
+
+        foreach (Move m in moves)
+        {
+            Board newBoard;
+
+            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+
+            newBoard.MakeMove(m);
+
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta);
+
+            availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });         
+        }
+
+        List<AvailableMove> sortedMoves;
+
+        if (_currentTurn == _board.currentTurn)
+        {
+            sortedMoves = availableMoves.OrderBy(m => m.score).ToList();
+        }
+        else
+        {
+            sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
+        }
+
+        sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
+
+        foreach (AvailableMove am in sortedMoves) Debug.Log(am.score);
+
+        if (availableMoves.Count == 1)
+        {
+            return availableMoves[0];
+        }
+        else
+        {
+            Debug.Log("i = " + (availableMoves.Count - 1) * (int)_difficultyRate / 100);
+            return availableMoves[(availableMoves.Count - 1) * (int)_difficultyRate / 100];
+            
         }
     }
 }

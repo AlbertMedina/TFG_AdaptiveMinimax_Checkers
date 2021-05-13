@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     private bool gameOver;
 
-    private int maxSearchDepth;
+    private int maxSearchingDepth;
 
     void Start()
     {
@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
 
         gameOver = false;
 
-        maxSearchDepth = initialSearchingDepth;
+        maxSearchingDepth = initialSearchingDepth;
 
         StartBoard(gameBoard);
     }
@@ -138,23 +138,21 @@ public class GameManager : MonoBehaviour
             float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
 
             //Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchDepth);
-            Algorithm.AvailableMove chosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchDepth, -Mathf.Infinity, Mathf.Infinity);
+            Algorithm.AvailableMove chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 100);
 
-            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime) maxSearchDepth++;
-            else if (maxSearchDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchDepth--;
-            Debug.Log(maxSearchDepth);
+            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime) maxSearchingDepth++;
+            else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
 
             if (chosenMove.move == null)
             {
                 GameOver();
-                return;
             }
-
-            gameBoard.MakeMove(chosenMove.move);
-
-            UpdateBoard(chosenMove.move);
-
-            ChangeTurn();
+            else
+            {
+                gameBoard.MakeMove(chosenMove.move);
+                UpdateBoard(chosenMove.move);
+                ChangeTurn();
+            }
         }
     }
 
