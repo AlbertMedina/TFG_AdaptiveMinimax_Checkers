@@ -281,17 +281,12 @@ public class Algorithm
 
         List<Move> moves = _board.GetAllMoves();
 
-        //Debug.Log(availableMoves.Count);
-
         if (moves.Count == 0)
         {
             return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
         }
 
         List<AvailableMove> availableMoves = new List<AvailableMove>(0);
-
-        //if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
-        //else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -324,18 +319,26 @@ public class Algorithm
             sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
         }
 
-        //foreach (AvailableMove sm in sortedMoves) Debug.Log(sm.score);
-        //foreach (AvailableMove sm in sortedMoves) Debug.Log("From " + sm.move.from + " to" + sm.move.to);
-
         if (sortedMoves.Count == 1)
         {
             return sortedMoves[0];
         }
         else
         {
-            //Debug.Log("i = " + (sortedMoves.Count - 1) * (int)_difficultyRate / 100);
             return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
         }
+    }
+
+    public static List<Move> GetOrderedMoves()
+    {
+        return new List<Move>();
+    }
+
+    public static float GetDifficultyRate(Move _move, List<AvailableMove> _movesList)
+    {
+        float difficultyRate = 0f;
+
+        return difficultyRate;
     }
 
     static List<AvailableMove> ShuffleList(List<AvailableMove> _list)

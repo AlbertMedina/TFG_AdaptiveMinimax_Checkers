@@ -162,8 +162,6 @@ public class GameManager : MonoBehaviour
                 if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && chosenMove.move.jumped.Count == 0) maxSearchingDepth++;
                 else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
 
-                Debug.Log(maxSearchingDepth);
-
                 gameBoard.MakeMove(chosenMove.move);
                 UpdateBoard(chosenMove.move);
                 ChangeTurn();
