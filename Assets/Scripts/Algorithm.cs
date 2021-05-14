@@ -311,6 +311,8 @@ public class Algorithm
             if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
+        availableMoves = ShuffleList(availableMoves);
+
         List<AvailableMove> sortedMoves;
 
         if (_currentTurn == _board.currentTurn)
@@ -323,6 +325,7 @@ public class Algorithm
         }
 
         //foreach (AvailableMove sm in sortedMoves) Debug.Log(sm.score);
+        //foreach (AvailableMove sm in sortedMoves) Debug.Log("From " + sm.move.from + " to" + sm.move.to);
 
         if (sortedMoves.Count == 1)
         {
@@ -333,5 +336,18 @@ public class Algorithm
             //Debug.Log("i = " + (sortedMoves.Count - 1) * (int)_difficultyRate / 100);
             return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
         }
+    }
+
+    static List<AvailableMove> ShuffleList(List<AvailableMove> _list)
+    {
+        for (int i = 0; i < _list.Count; i++)
+        {
+            AvailableMove temp = _list[i];
+            int idx = Random.Range(i, _list.Count);
+            _list[i] = _list[idx];
+            _list[idx] = temp;
+        }
+
+        return _list;
     }
 }

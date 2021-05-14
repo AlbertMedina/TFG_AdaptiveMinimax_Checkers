@@ -146,7 +146,6 @@ public class GameManager : MonoBehaviour
 
             if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
             {
-                Debug.Log("bad");
                 chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
             }
             else
@@ -154,15 +153,17 @@ public class GameManager : MonoBehaviour
                 chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 100f, timeSinceAlgorithmCall, 5f);
             }
 
-            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime) maxSearchingDepth++;
-            else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
-
             if (chosenMove.move == null)
             {
                 GameOver();
             }
             else
             {
+                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && chosenMove.move.jumped.Count == 0) maxSearchingDepth++;
+                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+
+                Debug.Log(maxSearchingDepth);
+
                 gameBoard.MakeMove(chosenMove.move);
                 UpdateBoard(chosenMove.move);
                 ChangeTurn();
