@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] float maximumThinkingTime;
     [SerializeField] int initialSearchingDepth;
 
+    [Header("Secondary AI")]
+    [SerializeField] [Range(0.0f, 100.0f)] float presetDifficultyRate;
+
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
 
     private Board gameBoard;
@@ -28,6 +31,8 @@ public class GameManager : MonoBehaviour
 
     private Vector2Int selectedPiece;
     private List<Move> selectedPieceMoves;
+
+    private List<Algorithm.AvailableMove> playerAvailableMoves;
 
     private bool playerCanJump;
 
@@ -137,8 +142,17 @@ public class GameManager : MonoBehaviour
         {
             float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
 
-            //Algorithm.AvailableMove chosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchDepth);
-            Algorithm.AvailableMove chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 100);
+            Algorithm.AvailableMove chosenMove;
+
+            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
+            {
+                Debug.Log("bad");
+                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
+            }
+            else
+            {
+                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 100f, timeSinceAlgorithmCall, 5f);
+            }
 
             if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime) maxSearchingDepth++;
             else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;

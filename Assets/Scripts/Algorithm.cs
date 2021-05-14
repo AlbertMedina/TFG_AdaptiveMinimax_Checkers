@@ -194,7 +194,7 @@ public class Algorithm
         return bestMove;
     }
 
-    public static AvailableMove RndABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta)
+    public static AvailableMove RndABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime)
     {
         if (_currentDepth >= _maxDepth)
         {
@@ -224,7 +224,7 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
 
             if (_currentTurn == _board.currentTurn)
             {
@@ -258,6 +258,8 @@ public class Algorithm
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
                 }
             }
+
+            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         if (bestMoves.Count > 1)
@@ -270,7 +272,7 @@ public class Algorithm
         }
     }
 
-    public static AvailableMove MyMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate)
+    public static AvailableMove MyMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate, float _startingTime, float _maxThinkingTime)
     {
         if (_currentDepth >= _maxDepth)
         {
@@ -302,9 +304,11 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
 
-            availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });         
+            availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
+
+            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         List<AvailableMove> sortedMoves;
@@ -318,7 +322,7 @@ public class Algorithm
             sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
         }
 
-        foreach (AvailableMove sm in sortedMoves) Debug.Log(sm.score);
+        //foreach (AvailableMove sm in sortedMoves) Debug.Log(sm.score);
 
         if (sortedMoves.Count == 1)
         {
@@ -326,7 +330,7 @@ public class Algorithm
         }
         else
         {
-            Debug.Log("i = " + (sortedMoves.Count - 1) * (int)_difficultyRate / 100);
+            //Debug.Log("i = " + (sortedMoves.Count - 1) * (int)_difficultyRate / 100);
             return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
         }
     }
