@@ -32,7 +32,8 @@ public class GameManager : MonoBehaviour
     private Vector2Int selectedPiece;
     private List<Move> selectedPieceMoves;
 
-    private List<Algorithm.AvailableMove> playerAvailableMoves;
+    private List<Move> playerAvailableMoves;
+    private float difficultyRate;
 
     private bool playerCanJump;
 
@@ -58,6 +59,10 @@ public class GameManager : MonoBehaviour
         selectedPiece = Vector2Int.zero;
 
         selectedPieceMoves = new List<Move>(0);
+
+        playerAvailableMoves = new List<Move>(0);
+
+        difficultyRate = 50f;
 
         playerCanJump = false;
 
@@ -124,6 +129,8 @@ public class GameManager : MonoBehaviour
                             UpdateBoard(m);
                             RemoveHelpers();
 
+                            difficultyRate = Algorithm.GetDifficultyRate(difficultyRate, m, playerAvailableMoves);
+
                             ChangeTurn();
 
                             selectedPiece = Vector2Int.zero;
@@ -150,7 +157,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 100f, timeSinceAlgorithmCall, 5f);
+                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
             }
 
             if (chosenMove.move == null)
@@ -186,6 +193,7 @@ public class GameManager : MonoBehaviour
                         if (gameBoard.GetPieceJumps(new Vector2Int(j, i)).Count > 0)
                         {
                             playerCanJump = true;
+                            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
                             return;
                         }
                     }
@@ -198,7 +206,11 @@ public class GameManager : MonoBehaviour
                 {
                     if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == checkersTag || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == kingsTag))
                     {
-                        if (gameBoard.GetPieceMoves(new Vector2Int(j, i)).Count > 0) return;
+                        if (gameBoard.GetPieceMoves(new Vector2Int(j, i)).Count > 0)
+                        {
+                            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
+                            return;
+                        }
                     }
                 }
             }

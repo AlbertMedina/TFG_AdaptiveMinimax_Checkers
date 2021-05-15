@@ -329,16 +329,60 @@ public class Algorithm
         }
     }
 
-    public static List<Move> GetOrderedMoves()
+    public static List<Move> GetSortedMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime)
     {
-        return new List<Move>();
+        List<Move> moves = _board.GetAllMoves();
+
+        List<AvailableMove> availableMoves = new List<AvailableMove>(0);
+
+        AvailableMove currentMove = new AvailableMove();
+
+        foreach (Move m in moves)
+        {
+            Board newBoard;
+
+            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+
+            newBoard.MakeMove(m);
+
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
+
+            availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
+
+            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
+        }
+
+        //availableMoves = ShuffleList(availableMoves);
+
+        List<AvailableMove> sortedMoves;
+
+        sortedMoves = availableMoves.OrderBy(m => m.score).ToList();
+
+        moves = new List<Move>(0);
+
+        foreach (AvailableMove sm in sortedMoves)
+        {
+            moves.Add(sm.move);
+        }
+
+        return moves;
     }
 
-    public static float GetDifficultyRate(Move _move, List<AvailableMove> _movesList)
+    public static float GetDifficultyRate(float _difficultyRate, Move _move, List<Move> _movesList)
     {
-        float difficultyRate = 0f;
+        float currentDifficultyRate;
 
-        return difficultyRate;
+        if (_movesList.Count > 1)
+        {
+            currentDifficultyRate = _movesList.IndexOf(_move) * 100 / (_movesList.Count - 1);
+        }
+        else
+        {
+            currentDifficultyRate = 50f;
+        }
+
+        return currentDifficultyRate;
     }
 
     static List<AvailableMove> ShuffleList(List<AvailableMove> _list)
