@@ -273,7 +273,7 @@ public class Algorithm
     }
 
     public static AvailableMove MyMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate, float _startingTime, float _maxThinkingTime)
-    {
+    {  
         if (_currentDepth >= _maxDepth)
         {
             return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
@@ -329,7 +329,7 @@ public class Algorithm
         }
     }
 
-    public static List<Move> GetSortedMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime)
+    public static List<AvailableMove> GetSortedMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime)
     {
         List<Move> moves = _board.GetAllMoves();
 
@@ -346,42 +346,65 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
+            currentMove = RndMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
             if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
-        //availableMoves = ShuffleList(availableMoves);
-
         List<AvailableMove> sortedMoves;
 
         sortedMoves = availableMoves.OrderBy(m => m.score).ToList();
 
-        moves = new List<Move>(0);
-
-        foreach (AvailableMove sm in sortedMoves)
-        {
-            moves.Add(sm.move);
-        }
-
-        return moves;
+        return sortedMoves;
     }
 
-    public static float GetDifficultyRate(float _difficultyRate, Move _move, List<Move> _movesList)
+    public static float UpdateDifficultyRate(float _difficultyRate, Move _move, List<AvailableMove> _movesList)
     {
+        float score = 0f;
+
+        for (int i = 0; i < _movesList.Count; i++)
+        {
+            if (_movesList[i].move.from == _move.from && _movesList[i].move.to == _move.to)
+            {
+                score = _movesList[i].score;
+                break;
+            }
+        }
+
+        List<float> scoresList = new List<float>(0);
+
+        foreach (AvailableMove am in _movesList)
+        {
+            if (scoresList.Count == 0)
+            {
+                scoresList.Add(am.score);
+            }
+            else if (am.score > scoresList[scoresList.Count - 1])
+            {
+                scoresList.Add(am.score);
+            }
+        }
+
+        //foreach (AvailableMove am in _movesList) Debug.Log("From " + am.move.from + " to " + am.move.to);     
+
         float currentDifficultyRate;
 
-        if (_movesList.Count > 1)
+        if (scoresList.Count > 1)
         {
-            currentDifficultyRate = _movesList.IndexOf(_move) * 100 / (_movesList.Count - 1);
+            //Debug.Log(scoresList.Count);      
+            currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
+            //Debug.Log(currentDifficultyRate);
         }
         else
         {
             currentDifficultyRate = 50f;
         }
 
+
+
+        //falta operació
         return currentDifficultyRate;
     }
 

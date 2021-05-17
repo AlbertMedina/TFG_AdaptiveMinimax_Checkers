@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     private Vector2Int selectedPiece;
     private List<Move> selectedPieceMoves;
 
-    private List<Move> playerAvailableMoves;
+    private List<Algorithm.AvailableMove> playerAvailableMoves;
     private float difficultyRate;
 
     private bool playerCanJump;
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
         selectedPieceMoves = new List<Move>(0);
 
-        playerAvailableMoves = new List<Move>(0);
+        playerAvailableMoves = new List<Algorithm.AvailableMove>(0);
 
         difficultyRate = 50f;
 
@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
         maxSearchingDepth = initialSearchingDepth;
 
         StartBoard(gameBoard);
+
+        playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
     }
 
     void Update()
@@ -129,7 +131,7 @@ public class GameManager : MonoBehaviour
                             UpdateBoard(m);
                             RemoveHelpers();
 
-                            difficultyRate = Algorithm.GetDifficultyRate(difficultyRate, m, playerAvailableMoves);
+                            difficultyRate = Algorithm.UpdateDifficultyRate(difficultyRate, m, playerAvailableMoves);
 
                             ChangeTurn();
 
