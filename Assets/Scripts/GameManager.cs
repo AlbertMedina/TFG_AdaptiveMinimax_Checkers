@@ -70,8 +70,8 @@ public class GameManager : MonoBehaviour
         playerAvailableMoves = new List<Algorithm.AvailableMove>(0);
 
         difficultyRate = 50f;
-        //OJO!!!!!
-        playerCanJump = true;
+        
+        playerCanJump = false;
 
         gameOver = false;
 
