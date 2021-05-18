@@ -387,25 +387,22 @@ public class Algorithm
             }
         }
 
-        //foreach (AvailableMove am in _movesList) Debug.Log("From " + am.move.from + " to " + am.move.to);     
-
         float currentDifficultyRate;
 
+        //Debug.Log("OLD: " + _difficultyRate);
+
         if (scoresList.Count > 1)
-        {
-            //Debug.Log(scoresList.Count);      
+        {  
             currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
-            //Debug.Log(currentDifficultyRate);
+            //Debug.Log("CURRENT: " + currentDifficultyRate);
+            //Debug.Log("RESULT: " + (_difficultyRate + currentDifficultyRate) / 2f);
+            //MILLORAR
+            return (_difficultyRate + currentDifficultyRate) / 2f;
         }
         else
         {
-            currentDifficultyRate = 50f;
+            return _difficultyRate;
         }
-
-
-
-        //falta operació
-        return currentDifficultyRate;
     }
 
     static List<AvailableMove> ShuffleList(List<AvailableMove> _list)

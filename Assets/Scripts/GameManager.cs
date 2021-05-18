@@ -41,6 +41,11 @@ public class GameManager : MonoBehaviour
 
     private int maxSearchingDepth;
 
+    //Movement
+    private bool moving;
+    private Transform movingPiece;
+    private Transform movingTarget;
+
     void Start()
     {
         if(gameMode == GameMode.Player_White)
@@ -70,6 +75,8 @@ public class GameManager : MonoBehaviour
 
         maxSearchingDepth = initialSearchingDepth;
 
+        moving = false;
+
         StartBoard(gameBoard);
 
         playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
@@ -79,6 +86,11 @@ public class GameManager : MonoBehaviour
     {
         if (!gameOver)
         {
+            if (moving)
+            {
+                return;
+            }
+
             switch (gameMode)
             {
                 case GameMode.Player_Black:
@@ -250,28 +262,38 @@ public class GameManager : MonoBehaviour
 
     void UpdateBoard(Move _move)
     {
-        board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.position = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position;
-        board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.parent = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;
+        movingPiece = board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform;
+        movingTarget = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;
 
+        movingPiece.parent = movingTarget;
+
+        moving = true;
+
+        //KING
         if (_move.to.y <= 0 || _move.to.y >= gameBoard.boardState.GetLength(0) - 1)
         {
-            if (board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).tag == "BlackChecker")
+            if (movingPiece.tag == "BlackChecker")
             {
-                Destroy(board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).gameObject);
-                Instantiate(blackKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform);
+                Destroy(movingPiece.gameObject);
+                movingPiece = Instantiate(blackKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform).transform;
             }
-            else if (board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).tag == "WhiteChecker")
+            else if (movingPiece.tag == "WhiteChecker")
             {
-                Destroy(board.transform.GetChild(_move.to.y).GetChild(_move.to.x).GetChild(0).gameObject);
-                Instantiate(whiteKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform);
+                Destroy(movingPiece.gameObject);
+                movingPiece = Instantiate(whiteKing, board.transform.GetChild(_move.from.y).GetChild(_move.from.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform).transform;
             }
         }
 
-
+        //DESTROY JUMPED
         foreach (Vector2Int jumped in _move.jumped)
         {
             Destroy(board.transform.GetChild(jumped.y).GetChild(jumped.x).GetChild(0).gameObject);
         }
+
+        StartCoroutine(SmoothLerp(movingPiece, movingTarget, 1f));
+
+        //board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.position = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position;
+        //board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.parent = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;  
     }
     #endregion
 
@@ -310,6 +332,21 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator SmoothLerp(Transform _piece, Transform _target, float _time)
+    {
+        Vector3 initPos = _piece.position;
+        float elapsedTime = 0;
+
+        while (elapsedTime < _time)
+        {
+            _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        moving = false;
     }
     #endregion
 
