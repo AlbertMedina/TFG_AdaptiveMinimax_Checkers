@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     private List<Algorithm.AvailableMove> playerAvailableMoves;
     private float difficultyRate;
 
+    private Algorithm.AvailableMove algorithmChosenMove;
+
     private bool playerCanJump;
 
     private bool gameOver;
@@ -161,30 +163,14 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
-
-            Algorithm.AvailableMove chosenMove;
-
-            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
-            {
-                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
-            }
-            else
-            {
-                chosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
-            }
-
-            if (chosenMove.move == null)
+            if (algorithmChosenMove.move == null)
             {
                 GameOver();
             }
             else
             {
-                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && chosenMove.move.jumped.Count == 0) maxSearchingDepth++;
-                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
-
-                gameBoard.MakeMove(chosenMove.move);
-                UpdateBoard(chosenMove.move);
+                gameBoard.MakeMove(algorithmChosenMove.move);
+                UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
             }
         }
@@ -231,6 +217,22 @@ public class GameManager : MonoBehaviour
 
             GameOver();
         }
+        else
+        {
+            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
+
+            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
+            {
+                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
+            }
+            else
+            {
+                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
+            }
+
+            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
+            else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+        }
     }
 
     void GameOver()
@@ -262,38 +264,14 @@ public class GameManager : MonoBehaviour
 
     void UpdateBoard(Move _move)
     {
-        movingPiece = board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform;
-        movingTarget = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;
+        movingPiece = VectorToTransform(_move.from).GetChild(0);
+        movingTarget = VectorToTransform(_move.to);
 
         movingPiece.parent = movingTarget;
 
         moving = true;
 
-        //KING
-        if (_move.to.y <= 0 || _move.to.y >= gameBoard.boardState.GetLength(0) - 1)
-        {
-            if (movingPiece.tag == "BlackChecker")
-            {
-                Destroy(movingPiece.gameObject);
-                movingPiece = Instantiate(blackKing, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform).transform;
-            }
-            else if (movingPiece.tag == "WhiteChecker")
-            {
-                Destroy(movingPiece.gameObject);
-                movingPiece = Instantiate(whiteKing, board.transform.GetChild(_move.from.y).GetChild(_move.from.x).transform.position, Quaternion.identity, board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform).transform;
-            }
-        }
-
-        //DESTROY JUMPED
-        foreach (Vector2Int jumped in _move.jumped)
-        {
-            Destroy(board.transform.GetChild(jumped.y).GetChild(jumped.x).GetChild(0).gameObject);
-        }
-
-        StartCoroutine(SmoothLerp(movingPiece, movingTarget, 1f));
-
-        //board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.position = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform.position;
-        //board.transform.GetChild(_move.from.y).GetChild(_move.from.x).GetChild(0).transform.parent = board.transform.GetChild(_move.to.y).GetChild(_move.to.x).transform;  
+        StartCoroutine(MovePiece(movingPiece, movingTarget, _move, 1f));  
     }
     #endregion
 
@@ -334,7 +312,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SmoothLerp(Transform _piece, Transform _target, float _time)
+    private IEnumerator MovePiece(Transform _piece, Transform _target, Move _move, float _time)
     {
         Vector3 initPos = _piece.position;
         float elapsedTime = 0;
@@ -347,6 +325,32 @@ public class GameManager : MonoBehaviour
         }
 
         moving = false;
+
+        //KING
+        if (_move.to.y <= 0 || _move.to.y >= gameBoard.boardState.GetLength(0) - 1)
+        {
+            if (movingPiece.tag == "BlackChecker")
+            {
+                Destroy(movingPiece.gameObject);
+                movingPiece = Instantiate(blackKing, movingTarget.position, Quaternion.identity, movingTarget).transform;
+            }
+            else if (movingPiece.tag == "WhiteChecker")
+            {
+                Destroy(movingPiece.gameObject);
+                movingPiece = Instantiate(whiteKing, movingTarget.position, Quaternion.identity, movingTarget).transform;
+            }
+        }
+
+        //DESTROY JUMPED
+        foreach (Vector2Int jumped in _move.jumped)
+        {
+            Destroy(VectorToTransform(jumped).GetChild(0).gameObject);
+        }
+
+        /*if (gameOver)
+        {
+
+        }*/
     }
     #endregion
 
