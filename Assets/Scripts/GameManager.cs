@@ -235,7 +235,6 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GameOver " + gameBoard.currentTurn);
         gameOver = true;
     }
     #endregion
@@ -378,10 +377,10 @@ public class GameManager : MonoBehaviour
             
         }
 
-        /*if (gameOver)
+        if (gameOver)
         {
-
-        }*/
+            Debug.Log("GameOver " + gameBoard.currentTurn);
+        }
     }
     #endregion
 
