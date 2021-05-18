@@ -70,8 +70,8 @@ public class GameManager : MonoBehaviour
         playerAvailableMoves = new List<Algorithm.AvailableMove>(0);
 
         difficultyRate = 50f;
-
-        playerCanJump = false;
+        //OJO!!!!!
+        playerCanJump = true;
 
         gameOver = false;
 
@@ -163,12 +163,26 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
+
+            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
+            {
+                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
+            }
+            else
+            {
+                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
+            }
+
             if (algorithmChosenMove.move == null)
             {
                 GameOver();
             }
             else
             {
+                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
+                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
@@ -216,22 +230,6 @@ public class GameManager : MonoBehaviour
             }
 
             GameOver();
-        }
-        else
-        {
-            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
-
-            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
-            {
-                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
-            }
-            else
-            {
-                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
-            }
-
-            if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
-            else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
         }
     }
 
@@ -317,12 +315,45 @@ public class GameManager : MonoBehaviour
         Vector3 initPos = _piece.position;
         float elapsedTime = 0;
 
-        while (elapsedTime < _time)
+        if (_move.jumped.Count > 0)
         {
-            _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            Vector2Int target = _move.from;
+
+            for (int i = _move.jumped.Count - 1; i > 0; i--)
+            {
+                target += (_move.jumped[i] - target) * 2;
+
+                while (elapsedTime < _time)
+                {
+                    _piece.position = Vector3.Lerp(initPos, VectorToTransform(target).position, (elapsedTime / _time));
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+
+                Destroy(VectorToTransform(_move.jumped[i]).GetChild(0).gameObject);
+                initPos = VectorToTransform(target).position;
+                elapsedTime = 0;
+            }
+
+            while (elapsedTime < _time)
+            {
+                _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            Destroy(VectorToTransform(_move.jumped[0]).GetChild(0).gameObject);
         }
+        else
+        {
+            while (elapsedTime < _time)
+            {
+                _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        
 
         moving = false;
 
@@ -344,7 +375,7 @@ public class GameManager : MonoBehaviour
         //DESTROY JUMPED
         foreach (Vector2Int jumped in _move.jumped)
         {
-            Destroy(VectorToTransform(jumped).GetChild(0).gameObject);
+            
         }
 
         /*if (gameOver)
