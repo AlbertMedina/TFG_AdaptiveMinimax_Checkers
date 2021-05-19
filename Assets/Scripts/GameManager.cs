@@ -33,15 +33,13 @@ public class GameManager : MonoBehaviour
     private List<Move> selectedPieceMoves;
 
     private List<Algorithm.AvailableMove> playerAvailableMoves;
-    private float difficultyRate;
+    private List<float> difficultyRates;
 
-    private Algorithm.AvailableMove algorithmChosenMove;
+    private int maxSearchingDepth;
 
     private bool playerCanJump;
 
     private bool gameOver;
-
-    private int maxSearchingDepth;
 
     //Movement
     private bool moving;
@@ -69,8 +67,8 @@ public class GameManager : MonoBehaviour
 
         playerAvailableMoves = new List<Algorithm.AvailableMove>(0);
 
-        difficultyRate = 50f;
-        
+        difficultyRates = new List<float>(0);
+
         playerCanJump = false;
 
         gameOver = false;
@@ -145,7 +143,7 @@ public class GameManager : MonoBehaviour
                             UpdateBoard(m);
                             RemoveHelpers();
 
-                            difficultyRate = Algorithm.UpdateDifficultyRate(difficultyRate, m, playerAvailableMoves);
+                            difficultyRates.Add(Algorithm.UpdateDifficultyRate(difficultyRates, m, playerAvailableMoves));
 
                             ChangeTurn();
 
@@ -165,13 +163,22 @@ public class GameManager : MonoBehaviour
         {
             float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
 
+            Algorithm.AvailableMove algorithmChosenMove;
+
             if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
             {
                 algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
             }
             else
             {
-                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRate, timeSinceAlgorithmCall, 5f);
+                if (difficultyRates.Count > 0)
+                {
+                    algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRates[difficultyRates.Count - 1], timeSinceAlgorithmCall, 5f);
+                }
+                else
+                {
+                    algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 50f, timeSinceAlgorithmCall, 5f);
+                }
             }
 
             if (algorithmChosenMove.move == null)
@@ -270,44 +277,6 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(MovePiece(movingPiece, movingTarget, _move, 1f));  
     }
-    #endregion
-
-    #region Helpers
-    void ShowHelpers()
-    {
-        RemoveHelpers();
-
-        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
-        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
-
-        VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
-
-        foreach (Move m in selectedPieceMoves)
-        {
-            VectorToTransform(m.to).GetComponent<SpriteRenderer>().color = Color.green;
-            VectorToTransform(m.to).GetComponent<SpriteRenderer>().enabled = true;
-
-            foreach (Vector2Int v in m.jumped)
-            {
-                VectorToTransform(v).GetComponent<SpriteRenderer>().color = Color.red;
-                VectorToTransform(v).GetComponent<SpriteRenderer>().enabled = true;
-            }
-        }
-    }
-
-    void RemoveHelpers()
-    {
-        for (int i = 0; i < board.transform.childCount; i++)
-        {
-            for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
-            {
-                if (board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>() != null)
-                {
-                    board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>().enabled = false;
-                }
-            }
-        }
-    }
 
     private IEnumerator MovePiece(Transform _piece, Transform _target, Move _move, float _time)
     {
@@ -352,8 +321,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        
-
         moving = false;
 
         //KING
@@ -371,15 +338,47 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //DESTROY JUMPED
-        foreach (Vector2Int jumped in _move.jumped)
-        {
-            
-        }
-
         if (gameOver)
         {
             Debug.Log("GameOver " + gameBoard.currentTurn);
+        }
+    }
+    #endregion
+
+    #region Helpers
+    void ShowHelpers()
+    {
+        RemoveHelpers();
+
+        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
+        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
+
+        VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
+
+        foreach (Move m in selectedPieceMoves)
+        {
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().color = Color.green;
+            VectorToTransform(m.to).GetComponent<SpriteRenderer>().enabled = true;
+
+            foreach (Vector2Int v in m.jumped)
+            {
+                VectorToTransform(v).GetComponent<SpriteRenderer>().color = Color.red;
+                VectorToTransform(v).GetComponent<SpriteRenderer>().enabled = true;
+            }
+        }
+    }
+
+    void RemoveHelpers()
+    {
+        for (int i = 0; i < board.transform.childCount; i++)
+        {
+            for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
+            {
+                if (board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>() != null)
+                {
+                    board.transform.GetChild(i).GetChild(j).GetComponent<SpriteRenderer>().enabled = false;
+                }
+            }
         }
     }
     #endregion
