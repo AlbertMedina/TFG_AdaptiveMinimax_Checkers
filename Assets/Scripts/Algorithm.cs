@@ -377,19 +377,14 @@ public class Algorithm
 
         foreach (AvailableMove am in _movesList)
         {
-            if (scoresList.Count == 0)
-            {
-                scoresList.Add(am.score);
-            }
-            else if (am.score > scoresList[scoresList.Count - 1])
-            {
-                scoresList.Add(am.score);
-            }
+            scoresList.Add(am.score);
         }
+
+        scoresList = scoresList.Distinct().ToList();
 
         float currentDifficultyRate;
 
-        //Debug.Log("OLD: " + _lastDifficultyRate);
+        Debug.Log("OLD: " + _lastDifficultyRate);
 
         if (scoresList.Count > 1)
         {
