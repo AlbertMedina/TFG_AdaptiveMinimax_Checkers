@@ -360,7 +360,7 @@ public class Algorithm
         return sortedMoves;
     }
 
-    public static float UpdateDifficultyRate(List<float> _difficultyRatesList, Move _move, List<AvailableMove> _movesList)
+    public static float UpdateDifficultyRate(Move _move, List<AvailableMove> _movesList, float _lastDifficultyRate, ref List<float> _difficultyRatesList)
     {
         float score = 0f;
 
@@ -389,14 +389,13 @@ public class Algorithm
 
         float currentDifficultyRate;
 
-        //Debug.Log("OLD: " + _difficultyRate);
+        //Debug.Log("OLD: " + _lastDifficultyRate);
 
         if (scoresList.Count > 1)
-        {  
+        {
             currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
 
-            int turnNumber = _difficultyRatesList.Count + 1;
-            int n = 0;
+            _difficultyRatesList.Add(currentDifficultyRate);
 
             float sum = 0f;
 
@@ -405,22 +404,16 @@ public class Algorithm
                 sum += _difficultyRatesList[i - 1] * i;
             }
 
-            sum += currentDifficultyRate * turnNumber;
-
-            n = turnNumber * (turnNumber + 1) / 2;
+            int n = _difficultyRatesList.Count * (_difficultyRatesList.Count + 1) / 2;
 
             Debug.Log("CURRENT: " + currentDifficultyRate);
             Debug.Log("RESULT: " + sum / n);
 
             return sum / n;
         }
-        else if (_difficultyRatesList.Count > 0)
-        {
-            return _difficultyRatesList[_difficultyRatesList.Count - 1];
-        }
         else
         {
-            return 50f;
+            return _lastDifficultyRate;
         }
     }
 

@@ -14,6 +14,11 @@ public class Board
 
     public bool playerBlack;
 
+    private float checkersCountWeight = 1f;
+    private float kingsCountWeight = 3f;
+    private float threatenedCountWeight = 0.5f;
+    private float movableCountWeight = 0.25f;
+
     public Board(bool _playerBlack)
     {
         if (_playerBlack)
@@ -38,7 +43,7 @@ public class Board
                                          {Square.Empty,         Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker},
                                          {Square.White_Checker, Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty,           Square.White_Checker,   Square.Empty} };
         }
-  
+
         currentTurn = Turn.Black;
         playerBlack = _playerBlack;
 
@@ -392,47 +397,103 @@ public class Board
 
     public float Evaluate(Turn _currentTurn)
     {
-        float score = CheckersCount() * 1f + KingsCount() * 3f;
+        float score = 0f;
+
+        List<Vector2Int> threatenedPieces = new List<Vector2Int>(0);
+
+        for (int i = 0; i < boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < boardState.GetLength(1); j++)
+            {
+                score += CheckersCount(boardState[i, j]);
+
+                score += KingsCount(boardState[i, j]);
+
+                score += MovableCount(boardState[i, j], new Vector2Int(j, i));
+
+                score += ThreatenedCount(boardState[i, j], new Vector2Int(j, i));
+            }
+        }
 
         if (_currentTurn == Turn.Black) return score;
         else return -score;
     }
 
-    private float CheckersCount()
+    private float CheckersCount(Square _square)
     {
-        float score = 0;
-
-        foreach (Square square in boardState)
+        if (_square == Square.Black_Checker)
         {
-            if (square == Square.Black_Checker)
-            {
-                score++;
-            }
-            else if (square == Square.White_Checker)
-            {
-                score--;
-            }
+            return checkersCountWeight;
+        }
+        else if (_square == Square.White_Checker)
+        {
+            return -checkersCountWeight;
         }
 
-        return score;
+        return 0f;
     }
 
-    private float KingsCount()
+    private float KingsCount(Square _square)
     {
-        float score = 0;
-
-        foreach (Square square in boardState)
+        if (_square == Square.Black_King)
         {
-            if (square == Square.Black_King)
+            return kingsCountWeight;
+        }
+        else if (_square == Square.White_King)
+        {
+            return -kingsCountWeight;
+        }
+
+        return 0f;
+    }
+
+    private float ThreatenedCount(Square _square, Vector2Int _pos)
+    {
+        float threatenedScore = 0f;
+        
+        if (currentTurn == Turn.Black && (_square == Square.Black_Checker || _square == Square.Black_King))
+        {
+            foreach (Move m in GetPieceJumps(_pos))
             {
-                score++;
+                foreach(Vector2 v in m.jumped)
+                {
+                    threatenedScore += threatenedCountWeight;
+                }
             }
-            else if (square == Square.White_King)
+        }
+        else if (currentTurn == Turn.White && (_square == Square.White_Checker || _square == Square.White_King))
+        {
+            foreach (Move m in GetPieceJumps(_pos))
             {
-                score--;
+                foreach (Vector2 v in m.jumped)
+                {
+                    threatenedScore -= threatenedCountWeight;
+                }
             }
         }
 
-        return score;
+        return threatenedScore; ;
+    }
+
+    private float MovableCount(Square _square, Vector2Int _pos)
+    {
+        if (_square == Square.Black_Checker || _square == Square.Black_King)
+        {
+            if (GetPieceJumps(_pos).Count > 0 || GetPieceMoves(_pos).Count > 0)
+            {
+                return movableCountWeight;
+            }
+        }
+        else if (_square == Square.White_Checker || _square == Square.White_King)
+        {
+            if (GetPieceJumps(_pos).Count > 0 || GetPieceMoves(_pos).Count > 0)
+            {
+                return -movableCountWeight;
+            }
+        }
+
+        
+        
+        return 0f;
     }
 }

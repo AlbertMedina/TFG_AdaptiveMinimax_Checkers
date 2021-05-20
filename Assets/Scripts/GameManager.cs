@@ -33,7 +33,8 @@ public class GameManager : MonoBehaviour
     private List<Move> selectedPieceMoves;
 
     private List<Algorithm.AvailableMove> playerAvailableMoves;
-    private List<float> difficultyRates;
+    private float currentDifficultyRate;
+    private List<float> difficultyRatesList;
 
     private int maxSearchingDepth;
 
@@ -66,8 +67,8 @@ public class GameManager : MonoBehaviour
         selectedPieceMoves = new List<Move>(0);
 
         playerAvailableMoves = new List<Algorithm.AvailableMove>(0);
-
-        difficultyRates = new List<float>(0);
+        currentDifficultyRate = 50f;
+        difficultyRatesList = new List<float>(0);
 
         playerCanJump = false;
 
@@ -142,9 +143,9 @@ public class GameManager : MonoBehaviour
                             gameBoard.MakeMove(m);
                             UpdateBoard(m);
                             RemoveHelpers();
-
-                            difficultyRates.Add(Algorithm.UpdateDifficultyRate(difficultyRates, m, playerAvailableMoves));
-
+                            
+                            currentDifficultyRate = Algorithm.UpdateDifficultyRate(m, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
+                            
                             ChangeTurn();
 
                             selectedPiece = Vector2Int.zero;
@@ -171,14 +172,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                if (difficultyRates.Count > 0)
-                {
-                    algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, difficultyRates[difficultyRates.Count - 1], timeSinceAlgorithmCall, 5f);
-                }
-                else
-                {
-                    algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, 50f, timeSinceAlgorithmCall, 5f);
-                }
+                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, 5f);
             }
 
             if (algorithmChosenMove.move == null)
