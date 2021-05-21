@@ -285,7 +285,7 @@ public class Algorithm
         {
             return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
         }
-
+        
         List<AvailableMove> availableMoves = new List<AvailableMove>(0);
 
         AvailableMove currentMove = new AvailableMove();
@@ -325,6 +325,9 @@ public class Algorithm
         }
         else
         {
+            //Debug.Log(sortedMoves.Count);
+            //Debug.Log(_difficultyRate);
+            //Debug.Log((sortedMoves.Count - 1) * (int)_difficultyRate / 100);
             return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
         }
     }

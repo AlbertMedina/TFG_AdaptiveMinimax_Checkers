@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if(gameMode == GameMode.Player_White)
+        if (gameMode == GameMode.Player_White)
         {
             checkersTag = "WhiteChecker";
             kingsTag = "WhiteKing";
@@ -98,24 +98,25 @@ public class GameManager : MonoBehaviour
                 case GameMode.Player_Black:
 
                     if (gameBoard.currentTurn == Board.Turn.Black) PlayerTurn();
-                    else AITurn();
+                    else MainAITurn();
 
                     break;
 
                 case GameMode.Player_White:
 
                     if (gameBoard.currentTurn == Board.Turn.White) PlayerTurn();
-                    else AITurn();
+                    else MainAITurn();
 
                     break;
                 case GameMode.AI_vs_AI:
 
-                    AITurn();
+                    if (gameBoard.currentTurn == Board.Turn.Black) MainAITurn();
+                    else SecondaryAITurn();
 
                     break;
             }
         }
-    }  
+    }
 
     #region Turn
     void PlayerTurn()
@@ -144,9 +145,9 @@ public class GameManager : MonoBehaviour
                             gameBoard.MakeMove(m);
                             UpdateBoard(m);
                             RemoveHelpers();
-                            
+
                             currentDifficultyRate = Algorithm.UpdateDifficultyRate(m, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
-                            
+
                             ChangeTurn();
 
                             selectedPiece = Vector2Int.zero;
@@ -159,7 +160,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void AITurn()
+    void MainAITurn()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -167,14 +168,7 @@ public class GameManager : MonoBehaviour
 
             Algorithm.AvailableMove algorithmChosenMove;
 
-            if (gameMode == GameMode.AI_vs_AI && gameBoard.currentTurn == Board.Turn.White)
-            {
-                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
-            }
-            else
-            {
-                algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, 5f);
-            }
+            algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, 5f);
 
             if (algorithmChosenMove.move == null)
             {
@@ -184,12 +178,39 @@ public class GameManager : MonoBehaviour
             {
                 if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
                 else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
-                Debug.Log(maxSearchingDepth);
 
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
-                
+
+                if (gameMode != GameMode.AI_vs_AI) playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
+            }
+        }
+    }
+
+    void SecondaryAITurn()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
+
+            Algorithm.AvailableMove algorithmChosenMove;
+
+            algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, 5f);
+
+            if (algorithmChosenMove.move == null)
+            {
+                GameOver();
+            }
+            else
+            {
+                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
+                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+
+                gameBoard.MakeMove(algorithmChosenMove.move);
+                UpdateBoard(algorithmChosenMove.move);
+                ChangeTurn();
+
                 if (gameMode != GameMode.AI_vs_AI) playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
             }
         }
@@ -246,7 +267,7 @@ public class GameManager : MonoBehaviour
 
         moving = true;
 
-        StartCoroutine(MovePiece(movingPiece, movingTarget, _move, 1f));  
+        StartCoroutine(MovePiece(movingPiece, movingTarget, _move, 1f));
     }
 
     private IEnumerator MovePiece(Transform _piece, Transform _target, Move _move, float _time)

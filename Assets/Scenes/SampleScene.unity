@@ -4610,7 +4610,7 @@ MonoBehaviour:
   blackKing: {fileID: 7952385627658190473, guid: 658c7957bfe6ca048bc295310fa42b27, type: 3}
   whiteChecker: {fileID: 3734317919805586836, guid: f9f56594e7ec8f34f9a20aefd5928259, type: 3}
   whiteKing: {fileID: 2234011257611268344, guid: 35a6b731ce8e3ff479de645b0d1c9154, type: 3}
-  gameMode: 0
+  gameMode: 2
   minimumThinkingTime: 0.3
   maximumThinkingTime: 1
   BreakingAlgorithmTime: 5
