@@ -399,7 +399,7 @@ public class Board
     {
         float score = 0f;
 
-        List<Vector2Int> threatenedPieces = new List<Vector2Int>(0);
+        if(GetAllMoves().Count == 0) return GameOver(_currentTurn);
 
         for (int i = 0; i < boardState.GetLength(0); i++)
         {
@@ -411,12 +411,18 @@ public class Board
 
                 score += ThreatenedCount(boardState[i, j], new Vector2Int(j, i));
 
-                score += MovableCount(boardState[i, j], new Vector2Int(j, i)); 
+                score += MovableCount(boardState[i, j], new Vector2Int(j, i));
             }
         }
 
         if (_currentTurn == Turn.Black) return score;
         else return -score;
+    }
+
+    private float GameOver(Turn _currentTurn)
+    {
+        if (_currentTurn == currentTurn) return -1000f;
+        else return 1000f;
     }
 
     private float CheckersCount(Square _square)
@@ -450,12 +456,12 @@ public class Board
     private float ThreatenedCount(Square _square, Vector2Int _pos)
     {
         float threatenedScore = 0f;
-        
+
         if (currentTurn == Turn.Black && (_square == Square.Black_Checker || _square == Square.Black_King))
         {
             foreach (Move m in GetPieceJumps(_pos))
             {
-                foreach(Vector2 v in m.jumped)
+                foreach (Vector2 v in m.jumped)
                 {
                     threatenedScore += threatenedCountWeight;
                 }
@@ -492,8 +498,8 @@ public class Board
             }
         }
 
-        
-        
+
+
         return 0f;
     }
 }
