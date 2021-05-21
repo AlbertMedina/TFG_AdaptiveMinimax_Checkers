@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -183,7 +184,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
 
-                if (gameMode != GameMode.AI_vs_AI) playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
+                playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
             }
         }
     }
@@ -209,9 +210,10 @@ public class GameManager : MonoBehaviour
 
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
-                ChangeTurn();
 
-                if (gameMode != GameMode.AI_vs_AI) playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
+                currentDifficultyRate = Algorithm.UpdateDifficultyRate(algorithmChosenMove.move, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
+
+                ChangeTurn();
             }
         }
     }

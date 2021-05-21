@@ -316,20 +316,35 @@ public class Algorithm
         }
         else
         {
+            //NECESSARY?
             sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
         }
 
-        if (sortedMoves.Count == 1)
+        if (sortedMoves.Count == 1) return sortedMoves[0];
+
+        List<float> scoresList = new List<float>(0);
+
+        foreach (AvailableMove am in sortedMoves)
         {
-            return sortedMoves[0];
+            scoresList.Add(am.score);
         }
-        else
+
+        scoresList = scoresList.Distinct().ToList();
+
+        float score = scoresList[(scoresList.Count - 1) * (int)_difficultyRate / 100];
+
+        AvailableMove chosenMove = new AvailableMove();
+
+        foreach (AvailableMove am in sortedMoves)
         {
-            //Debug.Log(sortedMoves.Count);
-            //Debug.Log(_difficultyRate);
-            //Debug.Log((sortedMoves.Count - 1) * (int)_difficultyRate / 100);
-            return sortedMoves[(sortedMoves.Count - 1) * (int)_difficultyRate / 100]; 
+            if (am.score == score)
+            {
+                chosenMove = am;
+                break;
+            }
         }
+
+        return chosenMove;
     }
 
     public static List<AvailableMove> GetSortedMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime)
@@ -404,8 +419,8 @@ public class Algorithm
 
             int n = _difficultyRatesList.Count * (_difficultyRatesList.Count + 1) / 2;
 
-            //Debug.Log("CURRENT: " + currentDifficultyRate);
-            //Debug.Log("RESULT: " + sum / n);
+            Debug.Log("CURRENT: " + currentDifficultyRate);
+            Debug.Log("RESULT: " + sum / n);
 
             return sum / n;
         }

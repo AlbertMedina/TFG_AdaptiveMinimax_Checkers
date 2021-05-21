@@ -4615,7 +4615,7 @@ MonoBehaviour:
   maximumThinkingTime: 1
   BreakingAlgorithmTime: 5
   initialSearchingDepth: 5
-  presetDifficultyRate: 100
+  presetDifficultyRate: 50
 --- !u!4 &2070188149
 Transform:
   m_ObjectHideFlags: 0
