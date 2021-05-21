@@ -409,9 +409,9 @@ public class Board
 
                 score += KingsCount(boardState[i, j]);
 
-                score += MovableCount(boardState[i, j], new Vector2Int(j, i));
-
                 score += ThreatenedCount(boardState[i, j], new Vector2Int(j, i));
+
+                score += MovableCount(boardState[i, j], new Vector2Int(j, i)); 
             }
         }
 

@@ -4613,6 +4613,7 @@ MonoBehaviour:
   gameMode: 0
   minimumThinkingTime: 0.3
   maximumThinkingTime: 1
+  BreakingAlgorithmTime: 5
   initialSearchingDepth: 5
   presetDifficultyRate: 100
 --- !u!4 &2070188149

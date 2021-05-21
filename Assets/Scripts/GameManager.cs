@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [Header("AI")]
     [SerializeField] float minimumThinkingTime;
     [SerializeField] float maximumThinkingTime;
+    [SerializeField] float BreakingAlgorithmTime;
     [SerializeField] int initialSearchingDepth;
 
     [Header("Secondary AI")]
@@ -187,6 +188,8 @@ public class GameManager : MonoBehaviour
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
+                
+                if (gameMode != GameMode.AI_vs_AI) playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
             }
         }
     }
@@ -195,43 +198,16 @@ public class GameManager : MonoBehaviour
     {
         gameBoard.ChangeTurn();
 
-        if ((gameMode == GameMode.Player_Black && gameBoard.currentTurn == Board.Turn.Black) || (gameMode == GameMode.Player_White && gameBoard.currentTurn == Board.Turn.White))
-        {  
-            playerCanJump = false;
+        List<Move> moves = gameBoard.GetAllMoves();
 
-            for (int i = 0; i < board.transform.childCount; i++)
-            {
-                for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
-                {
-                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == checkersTag || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == kingsTag))
-                    {        
-                        if (gameBoard.GetPieceJumps(new Vector2Int(j, i)).Count > 0)
-                        {
-                            playerCanJump = true;
-                            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
-                            return;
-                        }
-                    }
-                }
-            }
-
-            for (int i = 0; i < board.transform.childCount; i++)
-            {
-                for (int j = 0; j < board.transform.GetChild(i).childCount; j++)
-                {
-                    if (board.transform.GetChild(i).GetChild(j).childCount > 0 && (board.transform.GetChild(i).GetChild(j).GetChild(0).tag == checkersTag || board.transform.GetChild(i).GetChild(j).GetChild(0).tag == kingsTag))
-                    {
-                        if (gameBoard.GetPieceMoves(new Vector2Int(j, i)).Count > 0)
-                        {
-                            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, 5f);
-                            return;
-                        }
-                    }
-                }
-            }
-
+        if (moves.Count == 0)
+        {
             GameOver();
+            return;
         }
+
+        if (moves[0].jumped.Count > 0) playerCanJump = true;
+        else playerCanJump = false;
     }
 
     void GameOver()
