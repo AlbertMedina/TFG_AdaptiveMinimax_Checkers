@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     [Header("MAIN MENU")]
@@ -24,13 +24,7 @@ public class UIManager : MonoBehaviour
         
     }
 
-    public void StartGame()
-    {
-        gameManager.SetGameMode(player, black);
-        gameManager.StartGame();
-        mainMenu.SetActive(false);
-    }
-
+    #region MainMenu
     public void SetColor(int _value)
     {
         if (_value == 0) black = true;
@@ -68,4 +62,28 @@ public class UIManager : MonoBehaviour
     {
         gameManager.SetDifficultyRate(_value);
     }
+
+    public void StartGame()
+    {
+        gameManager.SetGameMode(player, black);
+        gameManager.StartGame();
+        mainMenu.SetActive(false);
+    }
+
+    public void Close()
+    {
+        Application.Quit();
+    }
+    #endregion
+
+    #region InGame
+
+    #endregion
+
+    #region GameOver
+    public void PlayAgain()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    #endregion
 }
