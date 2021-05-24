@@ -419,8 +419,8 @@ public class Algorithm
 
             int n = _difficultyRatesList.Count * (_difficultyRatesList.Count + 1) / 2;
 
-            Debug.Log("CURRENT: " + currentDifficultyRate);
-            Debug.Log("RESULT: " + sum / n);
+            //Debug.Log("CURRENT: " + currentDifficultyRate);
+            //Debug.Log("RESULT: " + sum / n);
 
             return sum / n;
         }
