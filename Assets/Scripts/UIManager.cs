@@ -4,15 +4,60 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private GameObject mainMenu;
+    
+    private GameManager gameManager;
+
+    private bool player = true;
+    private bool black = true;
+
     void Start()
+    {
+        gameManager = GameObject.FindObjectOfType<GameManager>();
+    }
+
+    void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartGame()
     {
-        
+        gameManager.SetGameMode(player, black);
+        gameManager.StartGame();
+        mainMenu.SetActive(false);
+    }
+
+    public void SetGameMode(int _value)
+    {
+        if (_value == 0) player = true;
+        else player = false;
+    }
+
+    public void SetColor(int _value)
+    {
+        if (_value == 0) black = true;
+        else black = false;
+    }
+
+    public void SetAlgorithm(int _value)
+    {
+        switch (_value)
+        {
+            case 0:
+                gameManager.SetAlgorithm(GameManager.AvailableAlgorithms.Adaptive_Minimax);
+                break;
+            case 1:
+                gameManager.SetAlgorithm(GameManager.AvailableAlgorithms.Minimax);
+                break;
+            case 2:
+                gameManager.SetAlgorithm(GameManager.AvailableAlgorithms.AB_Minimax);
+                break;
+        }
+    }
+
+    public void SetDifficultyRate(float _value)
+    {
+        gameManager.SetDifficultyRate(_value);
     }
 }

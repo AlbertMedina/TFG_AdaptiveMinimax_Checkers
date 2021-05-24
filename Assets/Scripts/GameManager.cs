@@ -12,19 +12,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject whiteChecker;
     [SerializeField] GameObject whiteKing;
 
-    [Header("Settings")]
-    [SerializeField] GameMode gameMode;
-
     [Header("AI")]
     [SerializeField] float minimumThinkingTime;
     [SerializeField] float maximumThinkingTime;
     [SerializeField] float breakingAlgorithmTime;
     [SerializeField] int initialSearchingDepth;
 
-    [Header("Secondary AI")]
-    [SerializeField] [Range(0.0f, 100.0f)] float presetDifficultyRate;
-
+    private UIManager UIManager;
+    
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
+    private GameMode gameMode;
+
+    public enum AvailableAlgorithms { Adaptive_Minimax, Minimax, AB_Minimax}
+    private AvailableAlgorithms selectedAlgorithm = AvailableAlgorithms.Adaptive_Minimax;
 
     private Board gameBoard;
 
@@ -38,31 +38,60 @@ public class GameManager : MonoBehaviour
     private float currentDifficultyRate;
     private List<float> difficultyRatesList;
 
+    private float presetDifficultyRate = 50f;
+
     private int maxSearchingDepth;
 
     private bool playerCanJump;
 
     private bool gameOver;
 
+    private bool playerBlack;
+
     //Movement
     private bool moving;
     private Transform movingPiece;
     private Transform movingTarget;
 
-    void Start()
+    public void SetGameMode(bool _player, bool _black)
     {
-        if (gameMode == GameMode.Player_White)
+        if (_player)
         {
-            checkersTag = "WhiteChecker";
-            kingsTag = "WhiteKing";
-            gameBoard = new Board(false);
+            if (_black)
+            {
+                gameMode = GameMode.Player_Black;
+                checkersTag = "BlackChecker";
+                kingsTag = "BlackKing";
+                gameBoard = new Board(true);
+            }
+            else
+            {
+                gameMode = GameMode.Player_White;
+                checkersTag = "WhiteChecker";
+                kingsTag = "WhiteKing";
+                gameBoard = new Board(false);
+            }
         }
         else
         {
-            checkersTag = "BlackChecker";
-            kingsTag = "BlackKing";
-            gameBoard = new Board(true);
+            gameMode = GameMode.AI_vs_AI;
+            gameBoard = new Board(_black);
         }
+    }
+
+    public void SetAlgorithm(AvailableAlgorithms _algorithm)
+    {
+        selectedAlgorithm = _algorithm;
+    }
+
+    public void SetDifficultyRate(float _difficultyRate)
+    {
+        presetDifficultyRate = _difficultyRate;
+    } 
+
+    void Start()
+    {
+        UIManager = GameObject.FindObjectOfType<UIManager>();
 
         selectedPiece = Vector2Int.zero;
 
@@ -74,11 +103,16 @@ public class GameManager : MonoBehaviour
 
         playerCanJump = false;
 
-        gameOver = false;
+        gameOver = true;
 
         maxSearchingDepth = initialSearchingDepth;
 
         moving = false;
+    }
+
+    public void StartGame()
+    {
+        gameOver = false;
 
         StartBoard(gameBoard);
 
@@ -212,7 +246,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
 
                 currentDifficultyRate = Algorithm.UpdateDifficultyRate(algorithmChosenMove.move, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
-                Debug.Log(currentDifficultyRate);
+                
                 ChangeTurn();
             }
         }
