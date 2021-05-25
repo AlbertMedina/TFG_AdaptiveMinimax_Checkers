@@ -219,7 +219,7 @@ public class GameManager : MonoBehaviour
 
             Algorithm.AvailableMove algorithmChosenMove;
 
-            algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
+            algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
 
             if (algorithmChosenMove.move == null)
             {
@@ -247,7 +247,18 @@ public class GameManager : MonoBehaviour
 
             Algorithm.AvailableMove algorithmChosenMove;
 
-            algorithmChosenMove = Algorithm.MyMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
+            switch (selectedAlgorithm)
+            {
+                case AvailableAlgorithms.Adaptive_Minimax:
+                    algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
+                    break;
+                case AvailableAlgorithms.Minimax:
+                    algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth);
+                    break;
+                default:
+                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime);
+                    break;
+            }
 
             if (algorithmChosenMove.move == null)
             {

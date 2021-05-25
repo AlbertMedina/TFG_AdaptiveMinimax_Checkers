@@ -272,7 +272,7 @@ public class Algorithm
         }
     }
 
-    public static AvailableMove MyMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate, float _startingTime, float _maxThinkingTime)
+    public static AvailableMove AdaptiveMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _difficultyRate, float _startingTime, float _maxThinkingTime)
     {  
         if (_currentDepth >= _maxDepth)
         {
@@ -316,7 +316,7 @@ public class Algorithm
         }
         else
         {
-            //NECESSARY?
+            //NECESSARY IF RECURSIVE
             sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
         }
 
@@ -331,6 +331,7 @@ public class Algorithm
 
         scoresList = scoresList.Distinct().ToList();
 
+        Debug.Log((scoresList.Count - 1) * (int)_difficultyRate / 100);
         float score = scoresList[(scoresList.Count - 1) * (int)_difficultyRate / 100];
 
         AvailableMove chosenMove = new AvailableMove();
@@ -402,8 +403,6 @@ public class Algorithm
 
         float currentDifficultyRate;
 
-        //Debug.Log("OLD: " + _lastDifficultyRate);
-
         if (scoresList.Count > 1)
         {
             currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
@@ -418,9 +417,6 @@ public class Algorithm
             }
 
             int n = _difficultyRatesList.Count * (_difficultyRatesList.Count + 1) / 2;
-
-            //Debug.Log("CURRENT: " + currentDifficultyRate);
-            //Debug.Log("RESULT: " + sum / n);
 
             return sum / n;
         }
