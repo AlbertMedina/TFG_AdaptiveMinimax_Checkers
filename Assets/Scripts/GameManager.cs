@@ -83,30 +83,27 @@ public class GameManager : MonoBehaviour
     {
         if (!gameOver)
         {
-            if (moving)
-            {
-                return;
-            }
+            if (moving) return;
 
             switch (gameMode)
             {
                 case GameMode.Player_Black:
 
                     if (gameBoard.currentTurn == Board.Turn.Black) PlayerTurn();
-                    else MainAITurn();
+                    else AdaptiveAITurn();
 
                     break;
 
                 case GameMode.Player_White:
 
                     if (gameBoard.currentTurn == Board.Turn.White) PlayerTurn();
-                    else MainAITurn();
+                    else AdaptiveAITurn();
 
                     break;
                 case GameMode.AI_vs_AI:
 
-                    if (gameBoard.currentTurn == Board.Turn.Black) MainAITurn();
-                    else SecondaryAITurn();
+                    if ((gameBoard.currentTurn == Board.Turn.Black && playerBlack) || (gameBoard.currentTurn == Board.Turn.White && !playerBlack)) PlayerAITurn();
+                    else AdaptiveAITurn();
 
                     break;
             }
@@ -124,21 +121,24 @@ public class GameManager : MonoBehaviour
                 gameMode = GameMode.Player_Black;
                 checkersTag = "BlackChecker";
                 kingsTag = "BlackKing";
-                gameBoard = new Board(true);
             }
             else
             {
                 gameMode = GameMode.Player_White;
                 checkersTag = "WhiteChecker";
                 kingsTag = "WhiteKing";
-                gameBoard = new Board(false);
+                
             }
+
+            gameBoard = new Board(_black);
         }
         else
         {
             gameMode = GameMode.AI_vs_AI;
             gameBoard = new Board(_black);
         }
+
+        playerBlack = _black;
     }
 
     public void SetAlgorithm(AvailableAlgorithms _algorithm)
@@ -211,7 +211,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void MainAITurn()
+    void AdaptiveAITurn()
     {
         if (Input.GetKeyDown(KeyCode.Space) || moveAutomatically)
         {
@@ -239,7 +239,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void SecondaryAITurn()
+    void PlayerAITurn()
     {
         if (Input.GetKeyDown(KeyCode.Space) || moveAutomatically)
         {
