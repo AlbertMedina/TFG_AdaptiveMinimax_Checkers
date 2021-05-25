@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour
 
     private bool gameOver;
 
+    private bool moveAutomatically;
+
     private bool playerBlack;
 
     //Movement
@@ -53,42 +55,7 @@ public class GameManager : MonoBehaviour
     private Transform movingPiece;
     private Transform movingTarget;
 
-    public void SetGameMode(bool _player, bool _black)
-    {
-        if (_player)
-        {
-            if (_black)
-            {
-                gameMode = GameMode.Player_Black;
-                checkersTag = "BlackChecker";
-                kingsTag = "BlackKing";
-                gameBoard = new Board(true);
-            }
-            else
-            {
-                gameMode = GameMode.Player_White;
-                checkersTag = "WhiteChecker";
-                kingsTag = "WhiteKing";
-                gameBoard = new Board(false);
-            }
-        }
-        else
-        {
-            gameMode = GameMode.AI_vs_AI;
-            gameBoard = new Board(_black);
-        }
-    }
-
-    public void SetAlgorithm(AvailableAlgorithms _algorithm)
-    {
-        selectedAlgorithm = _algorithm;
-    }
-
-    public void SetDifficultyRate(float _difficultyRate)
-    {
-        presetDifficultyRate = _difficultyRate;
-    } 
-
+    #region MonoBehaviour
     void Start()
     {
         UIManager = GameObject.FindObjectOfType<UIManager>();
@@ -108,15 +75,8 @@ public class GameManager : MonoBehaviour
         maxSearchingDepth = initialSearchingDepth;
 
         moving = false;
-    }
 
-    public void StartGame()
-    {
-        gameOver = false;
-
-        StartBoard(gameBoard);
-
-        playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
+        moveAutomatically = false;
     }
 
     void Update()
@@ -152,6 +112,59 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    #region GameSettings
+    public void SetGameMode(bool _player, bool _black)
+    {
+        if (_player)
+        {
+            if (_black)
+            {
+                gameMode = GameMode.Player_Black;
+                checkersTag = "BlackChecker";
+                kingsTag = "BlackKing";
+                gameBoard = new Board(true);
+            }
+            else
+            {
+                gameMode = GameMode.Player_White;
+                checkersTag = "WhiteChecker";
+                kingsTag = "WhiteKing";
+                gameBoard = new Board(false);
+            }
+        }
+        else
+        {
+            gameMode = GameMode.AI_vs_AI;
+            gameBoard = new Board(_black);
+        }
+    }
+
+    public void SetAlgorithm(AvailableAlgorithms _algorithm)
+    {
+        selectedAlgorithm = _algorithm;
+    }
+
+    public void SetDifficultyRate(float _difficultyRate)
+    {
+        presetDifficultyRate = _difficultyRate;
+    }
+
+    public void StartGame()
+    {
+        gameOver = false;
+
+        StartBoard(gameBoard);
+
+        playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
+    }
+
+    public void SetAutomaticMovement(bool _moveAutomatically)
+    {
+        moveAutomatically = _moveAutomatically;
+    }
+    #endregion 
 
     #region Turn
     void PlayerTurn()
@@ -183,6 +196,9 @@ public class GameManager : MonoBehaviour
 
                             currentDifficultyRate = Algorithm.UpdateDifficultyRate(m, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
 
+                            if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                            else UIManager.UpdateInfo(currentDifficultyRate);
+
                             ChangeTurn();
 
                             selectedPiece = Vector2Int.zero;
@@ -197,7 +213,7 @@ public class GameManager : MonoBehaviour
 
     void MainAITurn()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || moveAutomatically)
         {
             float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
 
@@ -225,7 +241,7 @@ public class GameManager : MonoBehaviour
 
     void SecondaryAITurn()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || moveAutomatically)
         {
             float timeSinceAlgorithmCall = Time.realtimeSinceStartup;
 
@@ -246,7 +262,10 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
 
                 currentDifficultyRate = Algorithm.UpdateDifficultyRate(algorithmChosenMove.move, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
-                
+
+                if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                else UIManager.UpdateInfo(currentDifficultyRate);
+
                 ChangeTurn();
             }
         }
@@ -368,7 +387,7 @@ public class GameManager : MonoBehaviour
 
         if (gameOver)
         {
-            Debug.Log("GameOver " + gameBoard.currentTurn);
+            UIManager.GameOver();
         }
     }
     #endregion

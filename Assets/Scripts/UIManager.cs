@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
@@ -8,7 +9,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject algorithmSelector;
     [SerializeField] private GameObject difficultyRateSlider;
-    
+
+    [Header("IN-GAME UI")]
+    [SerializeField] private GameObject inGameUI;
+    [SerializeField] private Text currentRate;
+    [SerializeField] private Text lastPerformance;
+
+    [Header("GAME OVER MENU")]
+    [SerializeField] private GameObject gameOverMenu;
+
     private GameManager gameManager;
 
     private bool player = true;
@@ -17,11 +26,6 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.FindObjectOfType<GameManager>();
-    }
-
-    void Update()
-    {
-        
     }
 
     #region MainMenu
@@ -68,6 +72,7 @@ public class UIManager : MonoBehaviour
         gameManager.SetGameMode(player, black);
         gameManager.StartGame();
         mainMenu.SetActive(false);
+        inGameUI.SetActive(true);
     }
 
     public void Close()
@@ -77,10 +82,25 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region InGame
+    public void UpdateInfo(float _currentRate, float _lastPerformance = 50f)
+    {
+        currentRate.text = "Current Rate: " + _currentRate + " %";
+        lastPerformance.text = "Last Move Performance: " + _lastPerformance + " %";
+    }
 
+    public void AutomaticMovement(bool _moveAutomatically)
+    {
+        gameManager.SetAutomaticMovement(_moveAutomatically);
+    }
     #endregion
 
     #region GameOver
+    public void GameOver(float _currentRate = 0f /* ... */ )
+    {
+        inGameUI.SetActive(false);
+        gameOverMenu.SetActive(true);
+    }
+    
     public void PlayAgain()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
