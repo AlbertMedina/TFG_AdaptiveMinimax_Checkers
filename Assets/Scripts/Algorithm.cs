@@ -331,8 +331,7 @@ public class Algorithm
 
         scoresList = scoresList.Distinct().ToList();
 
-        Debug.Log((scoresList.Count - 1) * (int)_difficultyRate / 100);
-        float score = scoresList[(scoresList.Count - 1) * (int)_difficultyRate / 100];
+        float score = scoresList[Mathf.RoundToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
         AvailableMove chosenMove = new AvailableMove();
 
