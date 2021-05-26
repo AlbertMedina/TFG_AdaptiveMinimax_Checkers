@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
-
+                //if (gameMode == GameMode.AI_vs_AI && selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax) 
                 playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
             }
         }
