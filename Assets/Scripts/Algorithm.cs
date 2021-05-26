@@ -65,7 +65,7 @@ public class Algorithm
         return bestMove;
     }
 
-    public static AvailableMove RndMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth)
+    public static AvailableMove RndMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _startingTime, float _maxThinkingTime)
     {
         if (_currentDepth >= _maxDepth)
         {
@@ -95,7 +95,7 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth);
+            currentMove = RndMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _startingTime, _maxThinkingTime);
 
             if (_currentTurn == _board.currentTurn)
             {
@@ -121,6 +121,8 @@ public class Algorithm
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
                 }
             }
+
+            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
         
         if (bestMoves.Count > 1)
@@ -351,6 +353,11 @@ public class Algorithm
     {
         List<Move> moves = _board.GetAllMoves();
 
+        foreach (Move am in moves)
+        {
+            Debug.Log("FROM " + am.from + " TO " + am.to);
+        }
+
         List<AvailableMove> availableMoves = new List<AvailableMove>(0);
 
         AvailableMove currentMove = new AvailableMove();
@@ -364,11 +371,9 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
-
-            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         List<AvailableMove> sortedMoves;
@@ -388,7 +393,7 @@ public class Algorithm
             {
                 score = _movesList[i].score;
                 break;
-            }
+            }            
         }
 
         List<float> scoresList = new List<float>(0);
