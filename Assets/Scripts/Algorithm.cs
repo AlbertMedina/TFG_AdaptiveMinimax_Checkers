@@ -371,7 +371,7 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
         }
