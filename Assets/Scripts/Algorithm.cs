@@ -480,8 +480,6 @@ public class Algorithm
         //NECESSARY IF RECURSIVE
         if (_currentTurn != _board.currentTurn) scoresList.Reverse();
 
-        foreach (float f in scoresList) Debug.Log(f);
-
         float score = scoresList[Mathf.RoundToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
         AvailableMove chosenMove = new AvailableMove();
@@ -528,7 +526,7 @@ public class Algorithm
     public static float UpdateDifficultyRate(Move _move, List<AvailableMove> _movesList, float _lastDifficultyRate, ref List<float> _difficultyRatesList)
     {
         float score = 0f;
-
+        
         for (int i = 0; i < _movesList.Count; i++)
         {
             if (_movesList[i].move.from == _move.from && _movesList[i].move.to == _move.to)
@@ -548,15 +546,15 @@ public class Algorithm
         scoresList = scoresList.Distinct().ToList();
 
         scoresList.Sort();
-
+        
         float currentDifficultyRate;
 
         if (scoresList.Count > 1)
         {
             currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
-
+            
             _difficultyRatesList.Add(currentDifficultyRate);
-
+            
             float sum = 0f;
 
             for (int i = 1; i <= _difficultyRatesList.Count; i++)

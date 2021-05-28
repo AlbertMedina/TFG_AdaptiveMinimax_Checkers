@@ -196,7 +196,6 @@ public class GameManager : MonoBehaviour
                             currentDifficultyRate = Algorithm.UpdateDifficultyRate(m, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
 
                             if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
-                            else UIManager.UpdateInfo(currentDifficultyRate);
 
                             ChangeTurn();
 
@@ -233,7 +232,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
 
-                if (gameMode == GameMode.AI_vs_AI && selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax)
+                if (gameMode != GameMode.AI_vs_AI || selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax)
                 {
                     playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
                 }
@@ -277,7 +276,6 @@ public class GameManager : MonoBehaviour
                 currentDifficultyRate = Algorithm.UpdateDifficultyRate(algorithmChosenMove.move, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
 
                 if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
-                else UIManager.UpdateInfo(currentDifficultyRate);
 
                 ChangeTurn();
             }

@@ -518,7 +518,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Last Move Performance:'
+  m_Text: 'Last Move Performance: -'
 --- !u!222 &75761304
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9009,7 +9009,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Current Rate:'
+  m_Text: 'Current Rate: -'
 --- !u!1 &1856666678
 GameObject:
   m_ObjectHideFlags: 0
