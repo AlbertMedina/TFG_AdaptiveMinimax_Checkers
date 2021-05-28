@@ -464,36 +464,31 @@ public class Algorithm
             if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
-        availableMoves = ShuffleList(availableMoves);
-
-        List<AvailableMove> sortedMoves;
-
-        if (_currentTurn == _board.currentTurn)
-        {
-            sortedMoves = availableMoves.OrderBy(m => m.score).ToList();
-        }
-        else
-        {
-            //NECESSARY IF RECURSIVE
-            sortedMoves = availableMoves.OrderByDescending(m => m.score).ToList();
-        }
-
-        if (sortedMoves.Count == 1) return sortedMoves[0];
+        if (availableMoves.Count == 1) return availableMoves[0];
 
         List<float> scoresList = new List<float>(0);
 
-        foreach (AvailableMove am in sortedMoves)
+        foreach (AvailableMove am in availableMoves)
         {
             scoresList.Add(am.score);
         }
 
         scoresList = scoresList.Distinct().ToList();
 
+        scoresList.Sort();    
+
+        //NECESSARY IF RECURSIVE
+        if (_currentTurn != _board.currentTurn) scoresList.Reverse();
+
+        foreach (float f in scoresList) Debug.Log(f);
+
         float score = scoresList[Mathf.RoundToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
         AvailableMove chosenMove = new AvailableMove();
 
-        foreach (AvailableMove am in sortedMoves)
+        availableMoves = ShuffleList(availableMoves);
+
+        foreach (AvailableMove am in availableMoves)
         {
             if (am.score == score)
             {
