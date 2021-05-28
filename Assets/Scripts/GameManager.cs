@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -233,8 +232,11 @@ public class GameManager : MonoBehaviour
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
-                //if (gameMode == GameMode.AI_vs_AI && selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax) 
-                playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
+
+                if (gameMode == GameMode.AI_vs_AI && selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax)
+                {
+                    playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
+                }
             }
         }
     }
@@ -253,10 +255,10 @@ public class GameManager : MonoBehaviour
                     algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
                     break;
                 case AvailableAlgorithms.Minimax:
-                    algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime);
+                    algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, ref playerAvailableMoves);
                     break;
-                default:
-                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime);
+                default:      
+                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, ref playerAvailableMoves);
                     break;
             }
 
