@@ -148,6 +148,11 @@ public class GameManager : MonoBehaviour
     public void SetDifficultyRate(float _difficultyRate)
     {
         presetDifficultyRate = _difficultyRate;
+    } 
+
+    public void SetAutomaticMovement(bool _moveAutomatically)
+    {
+        moveAutomatically = _moveAutomatically;
     }
 
     public void StartGame()
@@ -156,12 +161,10 @@ public class GameManager : MonoBehaviour
 
         StartBoard(gameBoard);
 
-        playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
-    }
-
-    public void SetAutomaticMovement(bool _moveAutomatically)
-    {
-        moveAutomatically = _moveAutomatically;
+        if (gameMode != GameMode.AI_vs_AI)
+        {
+            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
+        }
     }
     #endregion 
 
@@ -217,7 +220,7 @@ public class GameManager : MonoBehaviour
 
             Algorithm.AvailableMove algorithmChosenMove;
 
-            algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, currentDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
+            algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, currentDifficultyRate);
 
             if (algorithmChosenMove.move == null)
             {
@@ -232,7 +235,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
 
-                if (gameMode != GameMode.AI_vs_AI || selectedAlgorithm == AvailableAlgorithms.Adaptive_Minimax)
+                if (gameMode != GameMode.AI_vs_AI)
                 {
                     playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime);
                 }
@@ -251,7 +254,7 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgorithm)
             {
                 case AvailableAlgorithms.Adaptive_Minimax:
-                    algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, presetDifficultyRate, timeSinceAlgorithmCall, breakingAlgorithmTime);
+                    algorithmChosenMove = Algorithm.AdaptiveMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, presetDifficultyRate, ref playerAvailableMoves);
                     break;
                 case AvailableAlgorithms.Minimax:
                     algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, ref playerAvailableMoves);
@@ -381,7 +384,6 @@ public class GameManager : MonoBehaviour
 
         moving = false;
 
-        //KING
         if (_move.to.y <= 0 || _move.to.y >= gameBoard.boardState.GetLength(0) - 1)
         {
             if (movingPiece.tag == "BlackChecker")
