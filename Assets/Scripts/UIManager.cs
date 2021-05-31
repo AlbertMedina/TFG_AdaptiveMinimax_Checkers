@@ -12,7 +12,8 @@ public class UIManager : MonoBehaviour
 
     [Header("IN-GAME UI")]
     [SerializeField] private GameObject inGameUI;
-    [SerializeField] private Text currentRate;
+    [SerializeField] private Text currentTurn;
+    [SerializeField] private Text meanPerformance;
     [SerializeField] private Text lastPerformance;
 
     [Header("GAME OVER MENU")]
@@ -31,14 +32,26 @@ public class UIManager : MonoBehaviour
     #region MainMenu
     public void SetColor(int _value)
     {
-        if (_value == 0) black = true;
-        else black = false;
+        if (_value == 0)
+        {
+            black = true;
+        }
+        else
+        {
+            black = false;
+        }
     }
 
     public void SetGameMode(int _value)
     {
-        if (_value == 0) player = true;
-        else player = false;
+        if (_value == 0)
+        {
+            player = true;
+        }
+        else
+        {
+            player = false;
+        }
 
         algorithmSelector.SetActive(!player);
     }    
@@ -82,9 +95,21 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region InGame
-    public void UpdateInfo(float _currentRate, float _lastPerformance = 50f)
+    public void UpdateTurn(bool _black)
     {
-        currentRate.text = "Current Rate: " + _currentRate + " %";
+        if (_black)
+        {
+            currentTurn.text = "Current Turn: Black";
+        }
+        else
+        {
+            currentTurn.text = "Current Turn: White";
+        }
+    }
+    
+    public void UpdateInfo(float _meanPerformance, float _lastPerformance)
+    {
+        meanPerformance.text = "Mean Performance: " + _meanPerformance + " %";
         lastPerformance.text = "Last Move Performance: " + _lastPerformance + " %";
     }
 

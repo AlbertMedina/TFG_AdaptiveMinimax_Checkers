@@ -67,8 +67,14 @@ public class Board
 
     public void ChangeTurn()
     {
-        if (currentTurn == Turn.Black) currentTurn = Turn.White;
-        else currentTurn = Turn.Black;
+        if (currentTurn == Turn.Black)
+        {
+            currentTurn = Turn.White;
+        }
+        else
+        {
+            currentTurn = Turn.Black;
+        }
     }
 
     public List<Move> GetAllMoves()
@@ -179,8 +185,14 @@ public class Board
 
         int offset;
 
-        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack)) offset = 1;
-        else offset = -1;
+        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack))
+        {
+            offset = 1;
+        }
+        else
+        {
+            offset = -1;
+        }
 
         Square adversaryChecker, adversaryKing;
 
@@ -326,8 +338,14 @@ public class Board
 
         int offset;
 
-        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack)) offset = 1;
-        else offset = -1;
+        if ((currentTurn == Turn.Black && playerBlack) || (currentTurn == Turn.White && !playerBlack))
+        {
+            offset = 1;
+        }
+        else
+        {
+            offset = -1;
+        }
 
         bool forward = _row - offset >= 0 && _row - offset < boardState.GetLength(0);
         bool backward = _row + offset >= 0 && _row + offset < boardState.GetLength(0);
@@ -397,9 +415,12 @@ public class Board
 
     public float Evaluate(Turn _currentTurn)
     {
-        float score = 0f;
+        if(GetAllMoves().Count == 0)
+        {
+            return GameOver(_currentTurn);
+        }
 
-        if(GetAllMoves().Count == 0) return GameOver(_currentTurn);
+        float score = 0f;
 
         for (int i = 0; i < boardState.GetLength(0); i++)
         {
@@ -415,14 +436,26 @@ public class Board
             }
         }
 
-        if (_currentTurn == Turn.Black) return score;
-        else return -score;
+        if (_currentTurn == Turn.Black)
+        {
+            return score;
+        }
+        else
+        {
+            return -score;
+        }
     }
 
     private float GameOver(Turn _currentTurn)
     {
-        if (_currentTurn == currentTurn) return -1000f;
-        else return 1000f;
+        if (_currentTurn == currentTurn)
+        {
+            return -1000f;
+        }
+        else
+        {
+            return 1000f;
+        }
     }
 
     private float CheckersCount(Square _square)
@@ -478,7 +511,7 @@ public class Board
             }
         }
 
-        return threatenedScore; ;
+        return threatenedScore;
     }
 
     private float MovableCount(Square _square, Vector2Int _pos)
@@ -497,8 +530,6 @@ public class Board
                 return -movableCountWeight;
             }
         }
-
-
 
         return 0f;
     }

@@ -88,21 +88,40 @@ public class GameManager : MonoBehaviour
             {
                 case GameMode.Player_Black:
 
-                    if (gameBoard.currentTurn == Board.Turn.Black) PlayerTurn();
-                    else AdaptiveAITurn();
+                    if (gameBoard.currentTurn == Board.Turn.Black)
+                    {
+                        PlayerTurn();
+                    }
+                    else
+                    {
+                        AdaptiveAITurn();
+                    }
 
                     break;
 
                 case GameMode.Player_White:
 
-                    if (gameBoard.currentTurn == Board.Turn.White) PlayerTurn();
-                    else AdaptiveAITurn();
+                    if (gameBoard.currentTurn == Board.Turn.White)
+                    {
+                        PlayerTurn();
+                    }
+                    else
+                    {
+                        AdaptiveAITurn();
+                    }
 
                     break;
+
                 case GameMode.AI_vs_AI:
 
-                    if ((gameBoard.currentTurn == Board.Turn.Black && playerBlack) || (gameBoard.currentTurn == Board.Turn.White && !playerBlack)) PlayerAITurn();
-                    else AdaptiveAITurn();
+                    if ((gameBoard.currentTurn == Board.Turn.Black && playerBlack) || (gameBoard.currentTurn == Board.Turn.White && !playerBlack))
+                    {
+                        PlayerAITurn();
+                    }
+                    else
+                    {
+                        AdaptiveAITurn();
+                    }
 
                     break;
             }
@@ -181,8 +200,14 @@ public class GameManager : MonoBehaviour
                 {
                     selectedPiece = TransformToVector(hit.transform);
 
-                    if (playerCanJump) selectedPieceMoves = gameBoard.GetPieceJumps(selectedPiece);
-                    else selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
+                    if (playerCanJump)
+                    {
+                        selectedPieceMoves = gameBoard.GetPieceJumps(selectedPiece);
+                    }
+                    else
+                    {
+                        selectedPieceMoves = gameBoard.GetPieceMoves(selectedPiece);
+                    }
 
                     ShowHelpers();
                 }
@@ -198,7 +223,10 @@ public class GameManager : MonoBehaviour
 
                             currentDifficultyRate = Algorithm.UpdateDifficultyRate(m, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
 
-                            if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                            if (difficultyRatesList.Count > 0)
+                            {
+                                UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                            }
 
                             ChangeTurn();
 
@@ -228,8 +256,14 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
-                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0)
+                {
+                    maxSearchingDepth++;
+                }
+                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime)
+                {
+                    maxSearchingDepth--;
+                }
 
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
@@ -270,15 +304,24 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0) maxSearchingDepth++;
-                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime) maxSearchingDepth--;
+                if (Time.realtimeSinceStartup - timeSinceAlgorithmCall < minimumThinkingTime && algorithmChosenMove.move.jumped.Count == 0)
+                {
+                    maxSearchingDepth++;
+                }
+                else if (maxSearchingDepth > 1 && Time.realtimeSinceStartup - timeSinceAlgorithmCall > maximumThinkingTime)
+                {
+                    maxSearchingDepth--;
+                }
 
                 gameBoard.MakeMove(algorithmChosenMove.move);
                 UpdateBoard(algorithmChosenMove.move);
 
                 currentDifficultyRate = Algorithm.UpdateDifficultyRate(algorithmChosenMove.move, playerAvailableMoves, currentDifficultyRate, ref difficultyRatesList);
 
-                if (difficultyRatesList.Count > 0) UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                if (difficultyRatesList.Count > 0)
+                {
+                    UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                }
 
                 ChangeTurn();
             }
@@ -297,8 +340,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (moves[0].jumped.Count > 0) playerCanJump = true;
-        else playerCanJump = false;
+        if (moves[0].jumped.Count > 0)
+        {
+            playerCanJump = true;
+        }
+        else
+        {
+            playerCanJump = false;
+        }
     }
 
     void GameOver()
@@ -398,6 +447,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        UIManager.UpdateTurn(gameBoard.currentTurn == Board.Turn.Black);
+
         if (gameOver)
         {
             UIManager.GameOver();
@@ -410,8 +461,14 @@ public class GameManager : MonoBehaviour
     {
         RemoveHelpers();
 
-        if (selectedPieceMoves.Count > 0) VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
-        else VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
+        if (selectedPieceMoves.Count > 0)
+        {
+            VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.green;
+        }
+        else
+        {
+            VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().color = Color.red;
+        }
 
         VectorToTransform(selectedPiece).GetComponent<SpriteRenderer>().enabled = true;
 

@@ -28,8 +28,14 @@ public class Algorithm
 
         AvailableMove bestMove;
 
-        if (_currentTurn == _board.currentTurn) bestMove = new AvailableMove() { move = null, score = -Mathf.Infinity };
-        else bestMove = new AvailableMove() { move = null, score = Mathf.Infinity };
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMove = new AvailableMove() { move = null, score = -Mathf.Infinity };
+        }
+        else
+        {
+            bestMove = new AvailableMove() { move = null, score = Mathf.Infinity };
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -37,8 +43,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -81,8 +93,14 @@ public class Algorithm
 
         List<AvailableMove> bestMoves = new List<AvailableMove>(0);
 
-        if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
-        else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
+        }
+        else
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -90,8 +108,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -153,8 +177,14 @@ public class Algorithm
 
         List<AvailableMove> bestMoves = new List<AvailableMove>(0);
 
-        if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
-        else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
+        }
+        else
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -162,8 +192,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -225,8 +261,14 @@ public class Algorithm
 
         AvailableMove bestMove;
 
-        if (_currentTurn == _board.currentTurn) bestMove = new AvailableMove() { move = null, score = -Mathf.Infinity };
-        else bestMove = new AvailableMove() { move = null, score = Mathf.Infinity };
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMove = new AvailableMove() { move = null, score = -Mathf.Infinity };
+        }
+        else
+        {
+            bestMove = new AvailableMove() { move = null, score = Mathf.Infinity };
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -234,8 +276,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -248,9 +296,15 @@ public class Algorithm
                     bestMove.score = currentMove.score;
                     bestMove.move = m;
 
-                    if (bestMove.score > _alpha) _alpha = bestMove.score;
+                    if (bestMove.score > _alpha)
+                    {
+                        _alpha = bestMove.score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
             }
             else
@@ -260,9 +314,15 @@ public class Algorithm
                     bestMove.score = currentMove.score;
                     bestMove.move = m;
 
-                    if (bestMove.score < _beta) _beta = bestMove.score;
+                    if (bestMove.score < _beta)
+                    {
+                        _beta = bestMove.score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -286,8 +346,14 @@ public class Algorithm
 
         List<AvailableMove> bestMoves = new List<AvailableMove>(0);
 
-        if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
-        else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
+        }
+        else
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -295,8 +361,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -309,9 +381,15 @@ public class Algorithm
                     bestMoves = new List<AvailableMove>(0);
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
-                    if (bestMoves[0].score > _alpha) _alpha = bestMoves[0].score;
+                    if (bestMoves[0].score > _alpha)
+                    {
+                        _alpha = bestMoves[0].score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
                 else if (currentMove.score == bestMoves[0].score)
                 {
@@ -325,9 +403,15 @@ public class Algorithm
                     bestMoves = new List<AvailableMove>(0);
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
-                    if (bestMoves[0].score < _beta) _beta = bestMoves[0].score;
+                    if (bestMoves[0].score < _beta)
+                    {
+                        _beta = bestMoves[0].score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
                 else if (currentMove.score == bestMoves[0].score)
                 {
@@ -366,8 +450,14 @@ public class Algorithm
 
         List<AvailableMove> bestMoves = new List<AvailableMove>(0);
 
-        if (_currentTurn == _board.currentTurn) bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
-        else bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        if (_currentTurn == _board.currentTurn)
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = -Mathf.Infinity });
+        }
+        else
+        {
+            bestMoves.Add(new AvailableMove() { move = null, score = Mathf.Infinity });
+        }
 
         AvailableMove currentMove = new AvailableMove();
 
@@ -375,8 +465,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -391,9 +487,15 @@ public class Algorithm
                     bestMoves = new List<AvailableMove>(0);
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
-                    if (bestMoves[0].score > _alpha) _alpha = bestMoves[0].score;
+                    if (bestMoves[0].score > _alpha)
+                    {
+                        _alpha = bestMoves[0].score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
                 else if (currentMove.score == bestMoves[0].score)
                 {
@@ -407,9 +509,15 @@ public class Algorithm
                     bestMoves = new List<AvailableMove>(0);
                     bestMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
-                    if (bestMoves[0].score < _beta) _beta = bestMoves[0].score;
+                    if (bestMoves[0].score < _beta)
+                    {
+                        _beta = bestMoves[0].score;
+                    }
 
-                    if (_beta <= _alpha) break;
+                    if (_beta <= _alpha)
+                    {
+                        break;
+                    }
                 }
                 else if (currentMove.score == bestMoves[0].score)
                 {
@@ -520,8 +628,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -583,8 +697,14 @@ public class Algorithm
         {
             Board newBoard;
 
-            if (_board.currentTurn == Board.Turn.Black) newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
-            else newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            if (_board.currentTurn == Board.Turn.Black)
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.White, _board.playerBlack);
+            }
+            else
+            {
+                newBoard = new Board((Board.Square[,])_board.boardState.Clone(), Board.Turn.Black, _board.playerBlack);
+            }
 
             newBoard.MakeMove(m);
 
@@ -662,7 +782,13 @@ public class Algorithm
     {
         int prev = (int)_number;
 
-        if (_number - prev < prev + 1 - _number) return prev;
-        else return prev + 1;
+        if (_number - prev < prev + 1 - _number)
+        {
+            return prev;
+        }
+        else
+        {
+            return prev + 1;
+        }
     }
 }
