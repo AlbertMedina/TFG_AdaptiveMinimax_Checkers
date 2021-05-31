@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject algorithmSelector;
     [SerializeField] private GameObject difficultyRateSlider;
+    [SerializeField] private Text difficultyRate;
 
     [Header("IN-GAME UI")]
     [SerializeField] private GameObject inGameUI;
@@ -78,6 +79,7 @@ public class UIManager : MonoBehaviour
     public void SetDifficultyRate(float _value)
     {
         gameManager.SetDifficultyRate(_value);
+        difficultyRate.text = Mathf.RoundToInt(_value).ToString();
     }
 
     public void StartGame()
