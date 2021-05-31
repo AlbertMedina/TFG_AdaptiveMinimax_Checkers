@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
 
     [Header("IN-GAME UI")]
     [SerializeField] private GameObject inGameUI;
+    [SerializeField] private GameObject autoMoveText;
     [SerializeField] private Text currentTurn;
     [SerializeField] private Text meanPerformance;
     [SerializeField] private Text lastPerformance;
@@ -111,13 +112,14 @@ public class UIManager : MonoBehaviour
     
     public void UpdateInfo(float _meanPerformance, float _lastPerformance)
     {
-        meanPerformance.text = "Mean Performance: " + _meanPerformance + " %";
-        lastPerformance.text = "Last Move Performance: " + _lastPerformance + " %";
+        meanPerformance.text = "<b>Mean Performance:</b> " + _meanPerformance.ToString("F0") + "%";
+        lastPerformance.text = "<b>Last Move Performance:</b> " + _lastPerformance.ToString("F0") + "%";
     }
 
     public void AutomaticMovement(bool _moveAutomatically)
     {
         gameManager.SetAutomaticMovement(_moveAutomatically);
+        autoMoveText.SetActive(!_moveAutomatically);
     }
     #endregion
 
