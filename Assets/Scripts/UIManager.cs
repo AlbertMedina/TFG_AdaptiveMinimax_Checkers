@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
 
     [Header("GAME OVER MENU")]
     [SerializeField] private GameObject gameOverMenu;
+    [SerializeField] private Text winnerText;
+    [SerializeField] private Text finalPerformanceText;
 
     private GameManager gameManager;
 
@@ -124,10 +126,25 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region GameOver
-    public void GameOver(float _currentRate = 0f /* ... */ )
+    public void GameOver(bool _draw, bool _blackWinner, float _meanPerformance)
     {
         inGameUI.SetActive(false);
         gameOverMenu.SetActive(true);
+
+        if (_draw)
+        {
+            winnerText.text = "DRAW";
+        }
+        else if (_blackWinner)
+        {
+            winnerText.text = "BLACK WINS";
+        }
+        else
+        {
+            winnerText.text = "WHITE WINS";
+        }
+
+        finalPerformanceText.text = "MEAN PERFORMANCE: " + _meanPerformance.ToString("F0") + "%";
     }
     
     public void PlayAgain()

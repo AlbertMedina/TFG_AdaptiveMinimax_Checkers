@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
 
     private bool playerBlack;
 
+    private int movesToDraw;
+
     //Movement
     private bool moving;
     private Transform movingPiece;
@@ -73,9 +75,11 @@ public class GameManager : MonoBehaviour
 
         maxSearchingDepth = initialSearchingDepth;
 
-        moving = false;
-
         moveAutomatically = false;
+
+        movesToDraw = 20;
+
+        moving = false;
     }
 
     void Update()
@@ -334,7 +338,7 @@ public class GameManager : MonoBehaviour
 
         List<Move> moves = gameBoard.GetAllMoves();
 
-        if (moves.Count == 0)
+        if (moves.Count == 0 || movesToDraw <= 0)
         {
             GameOver();
             return;
@@ -395,6 +399,8 @@ public class GameManager : MonoBehaviour
 
         if (_move.jumped.Count > 0)
         {
+            movesToDraw = 20;
+            
             Vector2Int target = _move.from;
 
             for (int i = _move.jumped.Count - 1; i > 0; i--)
@@ -423,6 +429,15 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (_piece.tag == "BlackChecker" || _piece.tag == "WhiteChecker")
+            {
+                movesToDraw = 20;
+            }
+            else
+            {
+                movesToDraw--;
+            }
+            
             while (elapsedTime < _time)
             {
                 _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
@@ -449,9 +464,11 @@ public class GameManager : MonoBehaviour
 
         UIManager.UpdateTurn(gameBoard.currentTurn == Board.Turn.Black);
 
+        Debug.Log(movesToDraw);
+
         if (gameOver)
         {
-            UIManager.GameOver();
+            UIManager.GameOver(movesToDraw <= 0, gameBoard.currentTurn != Board.Turn.Black, currentDifficultyRate);
         }
     }
     #endregion
