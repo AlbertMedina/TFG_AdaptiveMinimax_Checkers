@@ -464,8 +464,6 @@ public class GameManager : MonoBehaviour
 
         UIManager.UpdateTurn(gameBoard.currentTurn == Board.Turn.Black);
 
-        Debug.Log(movesToDraw);
-
         if (gameOver)
         {
             UIManager.GameOver(movesToDraw <= 0, gameBoard.currentTurn != Board.Turn.Black, currentDifficultyRate);
