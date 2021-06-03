@@ -18,6 +18,7 @@ public class Board
     private float kingsCountWeight = 3f;
     private float threatenedCountWeight = 0.5f;
     private float movableCountWeight = 0.25f;
+    private float almostKingWeight = 0.25f;
 
     public Board(bool _playerBlack)
     {
@@ -433,6 +434,8 @@ public class Board
                 score += ThreatenedCount(boardState[i, j], new Vector2Int(j, i));
 
                 score += MovableCount(boardState[i, j], new Vector2Int(j, i));
+
+                score += AlmostKingCount(boardState[i, j], new Vector2Int(j, i));
             }
         }
 
@@ -528,6 +531,26 @@ public class Board
             if (GetPieceJumps(_pos).Count > 0 || GetPieceMoves(_pos).Count > 0)
             {
                 return -movableCountWeight;
+            }
+        }
+
+        return 0f;
+    }
+
+    private float AlmostKingCount(Square _square, Vector2Int _pos)
+    {
+        if(_square == Square.Black_Checker)
+        {
+            if ((playerBlack && _pos.y < boardState.GetLength(0) / 2) || (!playerBlack && _pos.y > boardState.GetLength(0) / 2))
+            {
+                return almostKingWeight;
+            }
+        }
+        else if (_square == Square.White_Checker)
+        {
+            if ((playerBlack && _pos.y > boardState.GetLength(0) / 2) || (!playerBlack && _pos.y < boardState.GetLength(0) / 2))
+            {
+                return -almostKingWeight;
             }
         }
 

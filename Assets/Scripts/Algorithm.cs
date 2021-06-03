@@ -566,7 +566,6 @@ public class Algorithm
             newBoard.MakeMove(m);
 
             currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
-            //currentMove = AdaptiveMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, _difficultyRate);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
 
@@ -665,7 +664,8 @@ public class Algorithm
         for (int i = scoresList.Count / 3; i < scoresList.Count; i++)
         {
             higherScoresList.Add(scoresList[i]);
-        }*/
+        }
+        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];*/
 
         float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
