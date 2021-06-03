@@ -568,8 +568,6 @@ public class Algorithm
             currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
-
-            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         if (availableMoves.Count == 1) return availableMoves[0];
@@ -585,19 +583,19 @@ public class Algorithm
 
         scoresList.Sort();
 
-        /*List<float> higherScoresList = new List<float>(0);
+        List<float> higherScoresList = new List<float>(0);
 
-        for (int i = scoresList.Count / 3; i < scoresList.Count; i++)
+        for (int i = scoresList.Count / 2; i < scoresList.Count; i++)
         {
             higherScoresList.Add(scoresList[i]);
         }
-        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];*/
+        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];
 
-        float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
+        //float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
         AvailableMove chosenMove = new AvailableMove();
 
-        availableMoves = ShuffleList(availableMoves);
+        ShuffleList(ref availableMoves);
 
         foreach (AvailableMove am in availableMoves)
         {
@@ -650,8 +648,6 @@ public class Algorithm
 
             _availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
-
-            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         if (availableMoves.Count == 1) return availableMoves[0];
@@ -667,19 +663,19 @@ public class Algorithm
 
         scoresList.Sort();
 
-        /*List<float> higherScoresList = new List<float>(0);
+        List<float> higherScoresList = new List<float>(0);
 
-        for (int i = scoresList.Count / 3; i < scoresList.Count; i++)
+        for (int i = scoresList.Count / 2; i < scoresList.Count; i++)
         {
             higherScoresList.Add(scoresList[i]);
         }
-        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];*/
+        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];
 
-        float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
+        //float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
         AvailableMove chosenMove = new AvailableMove();
 
-        availableMoves = ShuffleList(availableMoves);
+        ShuffleList(ref availableMoves);
 
         foreach (AvailableMove am in availableMoves)
         {
@@ -769,7 +765,7 @@ public class Algorithm
         return sum / n;
     }
 
-    static List<AvailableMove> ShuffleList(List<AvailableMove> _list)
+    static void ShuffleList(ref List<AvailableMove> _list)
     {
         for (int i = 0; i < _list.Count; i++)
         {
@@ -778,8 +774,6 @@ public class Algorithm
             _list[i] = _list[idx];
             _list[idx] = temp;
         }
-
-        return _list;
     }
 
     static int RoundFloatToInt(float _number)
