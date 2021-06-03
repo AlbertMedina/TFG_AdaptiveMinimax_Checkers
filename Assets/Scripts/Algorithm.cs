@@ -538,7 +538,7 @@ public class Algorithm
         }
     }
 
-    public static AvailableMove AdaptiveMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, float _difficultyRate)
+    public static AvailableMove AdaptiveABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, float _difficultyRate)
     {  
         if (_currentDepth >= _maxDepth)
         {
@@ -583,7 +583,15 @@ public class Algorithm
 
         scoresList = scoresList.Distinct().ToList();
 
-        scoresList.Sort();    
+        scoresList.Sort();
+
+        /*List<float> higherScoresList = new List<float>(0);
+
+        for (int i = scoresList.Count / 3; i < scoresList.Count; i++)
+        {
+            higherScoresList.Add(scoresList[i]);
+        }
+        float score = higherScoresList[RoundFloatToInt((higherScoresList.Count - 1) * _difficultyRate / 100)];*/
 
         float score = scoresList[RoundFloatToInt((scoresList.Count - 1) * _difficultyRate / 100)];
 
@@ -603,7 +611,7 @@ public class Algorithm
         return chosenMove;
     }
 
-    public static AvailableMove AdaptiveMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, float _difficultyRate, ref List<AvailableMove> _availableMoves)
+    public static AvailableMove AdaptiveABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, float _difficultyRate, ref List<AvailableMove> _availableMoves)
     {
         _availableMoves = new List<AvailableMove>(0);
 
@@ -716,13 +724,13 @@ public class Algorithm
         return availableMoves;
     }
 
-    public static float UpdateDifficultyRate(Move _move, List<AvailableMove> _movesList, float _playerlastPerformance, ref List<float> _playerPerformancesList)
+    public static float UpdateDifficultyRate(Move _chosenMove, List<AvailableMove> _movesList, float _lastDifficultyRate, ref List<float> _playerPerformancesList)
     {
-        float score = 0f;
+        float score = 0;
         
         for (int i = 0; i < _movesList.Count; i++)
         {
-            if (_movesList[i].move.from == _move.from && _movesList[i].move.to == _move.to)
+            if (_movesList[i].move.from == _chosenMove.from && _movesList[i].move.to == _chosenMove.to)
             {
                 score = _movesList[i].score;
                 break;
@@ -739,30 +747,26 @@ public class Algorithm
         scoresList = scoresList.Distinct().ToList();
 
         scoresList.Sort();
-        
-        float currentDifficultyRate;
 
-        if (scoresList.Count > 1)
+        if(scoresList.Count == 1)
         {
-            currentDifficultyRate = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
-            
-            _playerPerformancesList.Add(currentDifficultyRate);
-            
-            float sum = 0f;
-
-            for (int i = 1; i <= _playerPerformancesList.Count; i++)
-            {
-                sum += _playerPerformancesList[i - 1] * i;
-            }
-
-            int n = _playerPerformancesList.Count * (_playerPerformancesList.Count + 1) / 2;
-
-            return sum / n;
+            return _lastDifficultyRate;
         }
-        else
+
+        float currentPerformance = scoresList.IndexOf(score) * 100 / (scoresList.Count - 1);
+
+        _playerPerformancesList.Add(currentPerformance);
+
+        float sum = 0f;
+
+        for (int i = 1; i <= _playerPerformancesList.Count; i++)
         {
-            return _playerlastPerformance;
+            sum += _playerPerformancesList[i - 1] * i;
         }
+
+        int n = _playerPerformancesList.Count * (_playerPerformancesList.Count + 1) / 2;
+
+        return sum / n;
     }
 
     static List<AvailableMove> ShuffleList(List<AvailableMove> _list)
