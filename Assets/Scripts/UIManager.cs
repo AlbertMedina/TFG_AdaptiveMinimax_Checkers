@@ -104,11 +104,11 @@ public class UIManager : MonoBehaviour
     {
         if (_black)
         {
-            currentTurn.text = "Current Turn: Black";
+            currentTurn.text = "<b>Current Turn:</b> Black";
         }
         else
         {
-            currentTurn.text = "Current Turn: White";
+            currentTurn.text = "<b>Current Turn:</b> White";
         }
     }
     
@@ -133,15 +133,15 @@ public class UIManager : MonoBehaviour
 
         if (_draw)
         {
-            winnerText.text = "DRAW";
+            winnerText.text = "DRAW!";
         }
         else if (_blackWinner)
         {
-            winnerText.text = "BLACK WINS";
+            winnerText.text = "BLACK WINS!";
         }
         else
         {
-            winnerText.text = "WHITE WINS";
+            winnerText.text = "WHITE WINS!";
         }
 
         finalPerformanceText.text = "MEAN PERFORMANCE: " + _meanPerformance.ToString("F0") + "%";

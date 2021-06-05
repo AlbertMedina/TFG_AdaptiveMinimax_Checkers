@@ -676,7 +676,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <b>Last Move Performance:</b> -
+  m_Text: <b>Last Move Performance:</b> ---
 --- !u!222 &75761304
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9727,7 +9727,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <b>Mean Performance:</b> -
+  m_Text: <b>Mean Performance:</b> ---
 --- !u!1 &1856666678
 GameObject:
   m_ObjectHideFlags: 0
