@@ -229,7 +229,7 @@ public class GameManager : MonoBehaviour
 
                             if (difficultyRatesList.Count > 0)
                             {
-                                UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                                //UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
                             }
 
                             ChangeTurn();
