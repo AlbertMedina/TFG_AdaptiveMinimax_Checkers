@@ -10758,7 +10758,7 @@ MonoBehaviour:
   minimumThinkingTime: 0.3
   maximumThinkingTime: 1
   breakingAlgorithmTime: 3
-  initialSearchingDepth: 5
+  initialSearchingDepth: 6
 --- !u!4 &2070188149
 Transform:
   m_ObjectHideFlags: 0
