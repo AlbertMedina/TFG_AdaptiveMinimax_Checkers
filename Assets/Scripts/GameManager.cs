@@ -399,6 +399,11 @@ public class GameManager : MonoBehaviour
 
         if (_move.jumped.Count > 0)
         {
+            foreach (Vector2Int j in _move.jumped)
+            {
+                VectorToTransform(j).GetChild(0).position -= new Vector3(0, 0.1f, 0);
+            }
+            
             movesToDraw = 20;
             
             Vector2Int target = _move.from;
@@ -409,7 +414,7 @@ public class GameManager : MonoBehaviour
 
                 while (elapsedTime < _time)
                 {
-                    _piece.position = Vector3.Lerp(initPos, VectorToTransform(target).position, (elapsedTime / _time));
+                    _piece.position = Vector3.Lerp(initPos, VectorToTransform(target).position, elapsedTime / _time);
                     elapsedTime += Time.deltaTime;
                     yield return null;
                 }
@@ -421,7 +426,7 @@ public class GameManager : MonoBehaviour
 
             while (elapsedTime < _time)
             {
-                _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
+                _piece.position = Vector3.Lerp(initPos, _target.position, elapsedTime / _time);
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
@@ -440,7 +445,7 @@ public class GameManager : MonoBehaviour
             
             while (elapsedTime < _time)
             {
-                _piece.position = Vector3.Lerp(initPos, _target.position, (elapsedTime / _time));
+                _piece.position = Vector3.Lerp(initPos, _target.position, elapsedTime / _time);
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
