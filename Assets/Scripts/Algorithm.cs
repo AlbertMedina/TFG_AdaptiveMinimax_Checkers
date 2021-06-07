@@ -278,11 +278,16 @@ public class Algorithm
         }
     }
 
-    public static AvailableMove ABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta)
+    public static AvailableMove ABMinimax(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, int _movesToDraw)
     {
         if (_currentDepth >= _maxDepth)
         {
             return new AvailableMove() { move = null, score = _board.Evaluate(_currentTurn) };
+        }
+
+        if (_movesToDraw <= 0)
+        {
+            return new AvailableMove() { move = null, score = 0f };
         }
 
         List<Move> moves = _board.GetAllMoves();
@@ -320,7 +325,18 @@ public class Algorithm
 
             newBoard.MakeMove(m);
 
-            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta);
+            int movesToDraw;
+
+            if ((newBoard.boardState[m.to.y, m.to.x] == Board.Square.Black_King || newBoard.boardState[m.to.y, m.to.x] == Board.Square.White_King) && m.jumped.Count == 0)
+            {
+                movesToDraw = _movesToDraw - 1;
+            }
+            else
+            {
+                movesToDraw = 20;
+            }
+
+            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, movesToDraw);
 
             if (_currentTurn == _board.currentTurn)
             {
@@ -358,6 +374,8 @@ public class Algorithm
                     }
                 }
             }
+
+            if (Time.realtimeSinceStartup - _startingTime > _maxThinkingTime) break;
         }
 
         return bestMove;
@@ -421,7 +439,7 @@ public class Algorithm
                 movesToDraw = 20;
             }
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, movesToDraw);
+            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, movesToDraw);
 
             if (_currentTurn == _board.currentTurn)
             {
@@ -818,7 +836,7 @@ public class Algorithm
                 movesToDraw = 20;
             }
 
-            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, movesToDraw);
+            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, movesToDraw);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
         }
