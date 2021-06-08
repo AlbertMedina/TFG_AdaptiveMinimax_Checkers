@@ -184,7 +184,7 @@ public class GameManager : MonoBehaviour
 
         StartBoard(gameBoard);
 
-        if (gameMode != GameMode.AI_vs_AI)
+        if (playerBlack)
         {
             playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
         }
@@ -229,7 +229,7 @@ public class GameManager : MonoBehaviour
 
                             if (difficultyRatesList.Count > 0)
                             {
-                                //UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
+                                UIManager.UpdateInfo(currentDifficultyRate, difficultyRatesList[difficultyRatesList.Count - 1]);
                             }
 
                             ChangeTurn();
@@ -273,10 +273,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
 
-                if (gameMode != GameMode.AI_vs_AI)
-                {
-                    playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
-                }
+                playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
             }
         }
     }
@@ -292,13 +289,13 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgorithm)
             {
                 case AvailableAlgorithms.Adaptive_Minimax:
-                    algorithmChosenMove = Algorithm.AdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, presetDifficultyRate, movesToDraw, ref playerAvailableMoves);
+                    algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, presetDifficultyRate, movesToDraw);
                     break;
                 case AvailableAlgorithms.Minimax:
-                    algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw, ref playerAvailableMoves);
+                    algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
                     break;
-                default:      
-                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw, ref playerAvailableMoves);
+                default:
+                    algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
                     break;
             }
 
