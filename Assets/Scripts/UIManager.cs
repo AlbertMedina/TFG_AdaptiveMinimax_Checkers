@@ -11,6 +11,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject difficultyRateSlider;
     [SerializeField] private Text difficultyRate;
 
+    [Header("SETTINGS MENU")]
+    [SerializeField] private GameObject settingsMenu;
+    [SerializeField] private Text minimumThinkingTimeText;
+    [SerializeField] private Text maximumThinkingTimeText;
+    [SerializeField] private Text breakingAlgorithmTimeText;
+    [SerializeField] private Text initialSearchingDepthText;
+
     [Header("IN-GAME UI")]
     [SerializeField] private GameObject inGameUI;
     [SerializeField] private GameObject autoMoveText;
@@ -27,6 +34,11 @@ public class UIManager : MonoBehaviour
 
     private bool player = true;
     private bool black = true;
+
+    private float minimumThinkingTime = 0.3f;
+    private float maximumThinkingTime = 1f;
+    private float breakingAlgorithmTime = 3f;
+    private int initialSearchingDepth = 6;
 
     void Start()
     {
@@ -93,9 +105,48 @@ public class UIManager : MonoBehaviour
         inGameUI.SetActive(true);
     }
 
+    public void OpenSettingsMenu()
+    {
+        mainMenu.SetActive(false);
+        settingsMenu.SetActive(true);
+    }
+
     public void Close()
     {
         Application.Quit();
+    }
+    #endregion
+
+    #region Settings
+    public void SetMinimumThinkingTime(float _value)
+    {
+        minimumThinkingTime = _value;
+        minimumThinkingTimeText.text = _value.ToString("F1");
+    }
+
+    public void SetMaximumThinkingTime(float _value)
+    {
+        maximumThinkingTime = _value;
+        maximumThinkingTimeText.text = _value.ToString("F1");
+    }
+
+    public void SetBreakingAlgorithmTime(float _value)
+    {
+        breakingAlgorithmTime = _value;
+        breakingAlgorithmTimeText.text = _value.ToString("F1");
+    }
+
+    public void SetInitialSearchingDepth(float _value)
+    {
+        initialSearchingDepth = Mathf.RoundToInt(_value);
+        initialSearchingDepthText.text = Mathf.RoundToInt(_value).ToString();
+    }
+
+    public void BackToMenu()
+    {
+        gameManager.UpdateSettings(minimumThinkingTime, maximumThinkingTime, breakingAlgorithmTime, initialSearchingDepth);
+        settingsMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
     #endregion
 

@@ -11,18 +11,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject whiteChecker;
     [SerializeField] GameObject whiteKing;
 
-    [Header("AI")]
-    [SerializeField] float minimumThinkingTime;
-    [SerializeField] float maximumThinkingTime;
-    [SerializeField] float breakingAlgorithmTime;
-    [SerializeField] int initialSearchingDepth;
-
     private UIManager UIManager;
-    
+
     private enum GameMode { Player_Black, Player_White, AI_vs_AI }
     private GameMode gameMode;
 
-    public enum AvailableAlgorithms { Adaptive_Minimax, Minimax, AB_Minimax}
+    public enum AvailableAlgorithms { Adaptive_Minimax, Minimax, AB_Minimax }
     private AvailableAlgorithms selectedAlgorithm = AvailableAlgorithms.Adaptive_Minimax;
 
     private Board gameBoard;
@@ -39,6 +33,11 @@ public class GameManager : MonoBehaviour
 
     private float presetDifficultyRate = 50f;
 
+    private float minimumThinkingTime;
+    private float maximumThinkingTime;
+    private float breakingAlgorithmTime;
+    private int initialSearchingDepth;
+
     private int maxSearchingDepth;
 
     private bool playerCanJump;
@@ -51,7 +50,6 @@ public class GameManager : MonoBehaviour
 
     private int movesToDraw;
 
-    //Movement
     private bool moving;
     private Transform movingPiece;
     private Transform movingTarget;
@@ -72,6 +70,11 @@ public class GameManager : MonoBehaviour
         playerCanJump = false;
 
         gameOver = true;
+
+        minimumThinkingTime = 0.3f;
+        maximumThinkingTime = 1f;
+        breakingAlgorithmTime = 3f;
+        initialSearchingDepth = 6;
 
         maxSearchingDepth = initialSearchingDepth;
 
@@ -149,7 +152,7 @@ public class GameManager : MonoBehaviour
                 gameMode = GameMode.Player_White;
                 checkersTag = "WhiteChecker";
                 kingsTag = "WhiteKing";
-                
+
             }
 
             gameBoard = new Board(_black);
@@ -171,11 +174,19 @@ public class GameManager : MonoBehaviour
     public void SetDifficultyRate(float _difficultyRate)
     {
         presetDifficultyRate = _difficultyRate;
-    } 
+    }
 
     public void SetAutomaticMovement(bool _moveAutomatically)
     {
         moveAutomatically = _moveAutomatically;
+    }
+
+    public void UpdateSettings(float _minimumThinkingTime, float _maximumThinkingTime, float _breakingAlgorithmTime, int _initialSearchingDepth)
+    {
+        minimumThinkingTime = _minimumThinkingTime;
+        maximumThinkingTime = _maximumThinkingTime;
+        breakingAlgorithmTime = _breakingAlgorithmTime;
+        initialSearchingDepth = _initialSearchingDepth;
     }
 
     public void StartGame()
@@ -400,9 +411,9 @@ public class GameManager : MonoBehaviour
             {
                 VectorToTransform(j).GetChild(0).position -= new Vector3(0, 0.1f, 0);
             }
-            
+
             movesToDraw = 20;
-            
+
             Vector2Int target = _move.from;
 
             for (int i = _move.jumped.Count - 1; i > 0; i--)
@@ -439,7 +450,7 @@ public class GameManager : MonoBehaviour
             {
                 movesToDraw--;
             }
-            
+
             while (elapsedTime < _time)
             {
                 _piece.position = Vector3.Lerp(initPos, _target.position, elapsedTime / _time);
