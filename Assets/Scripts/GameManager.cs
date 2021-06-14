@@ -197,7 +197,7 @@ public class GameManager : MonoBehaviour
 
         if (playerBlack)
         {
-            playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
+            playerAvailableMoves = Algorithm.GetAvailableMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
         }
     }
     #endregion 
@@ -284,7 +284,7 @@ public class GameManager : MonoBehaviour
                 UpdateBoard(algorithmChosenMove.move);
                 ChangeTurn();
 
-                playerAvailableMoves = Algorithm.GetSortedMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
+                playerAvailableMoves = Algorithm.GetAvailableMoves(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, Time.realtimeSinceStartup, breakingAlgorithmTime, movesToDraw);
             }
         }
     }
@@ -306,7 +306,8 @@ public class GameManager : MonoBehaviour
                     algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
                     break;
                 default:
-                    algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
+                    //algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
+                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
                     break;
             }
 

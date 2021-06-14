@@ -582,7 +582,7 @@ public class Algorithm
         return chosenMove;
     }
 
-    public static List<AvailableMove> GetSortedMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, int _movesToDraw)
+    public static List<AvailableMove> GetAvailableMoves(Board _board, Board.Turn _currentTurn, int _currentDepth, int _maxDepth, float _alpha, float _beta, float _startingTime, float _maxThinkingTime, int _movesToDraw)
     {
         List<Move> moves = _board.GetAllMoves();
 
