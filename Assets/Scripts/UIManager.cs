@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     private float minimumThinkingTime = 0.3f;
     private float maximumThinkingTime = 1f;
     private float breakingAlgorithmTime = 3f;
-    private int initialSearchingDepth = 6;
+    private int initialSearchingDepth = 5;
 
     void Start()
     {

@@ -74,9 +74,7 @@ public class GameManager : MonoBehaviour
         minimumThinkingTime = 0.3f;
         maximumThinkingTime = 1f;
         breakingAlgorithmTime = 3f;
-        initialSearchingDepth = 6;
-
-        maxSearchingDepth = initialSearchingDepth;
+        initialSearchingDepth = 5;
 
         moveAutomatically = false;
 
@@ -191,6 +189,8 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        maxSearchingDepth = initialSearchingDepth;
+
         gameOver = false;
 
         StartBoard(gameBoard);
@@ -306,8 +306,10 @@ public class GameManager : MonoBehaviour
                     algorithmChosenMove = Algorithm.RndMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
                     break;
                 default:
-                    //algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
-                    algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
+                    algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
+                    //algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
+
+                    Debug.Log(algorithmChosenMove.score);
                     break;
             }
 
