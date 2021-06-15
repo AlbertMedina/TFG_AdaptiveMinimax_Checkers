@@ -307,9 +307,6 @@ public class GameManager : MonoBehaviour
                     break;
                 default:
                     algorithmChosenMove = Algorithm.PresetAdaptiveABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, 100f, movesToDraw);
-                    //algorithmChosenMove = Algorithm.RndABMinimax(gameBoard, gameBoard.currentTurn, 0, maxSearchingDepth, -Mathf.Infinity, Mathf.Infinity, timeSinceAlgorithmCall, breakingAlgorithmTime, movesToDraw);
-
-                    Debug.Log(algorithmChosenMove.score);
                     break;
             }
 

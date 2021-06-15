@@ -460,7 +460,7 @@ public class Algorithm
                 currentMovesToDraw = 20;
             }
 
-            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
         }
@@ -546,7 +546,7 @@ public class Algorithm
                 currentMovesToDraw = 20;
             }
 
-            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
         }
@@ -616,7 +616,7 @@ public class Algorithm
                 currentMovesToDraw = 20;
             }
 
-            currentMove = ABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
+            currentMove = RndABMinimax(newBoard, _currentTurn, _currentDepth + 1, _maxDepth, _alpha, _beta, _startingTime, _maxThinkingTime, currentMovesToDraw);
 
             availableMoves.Add(new AvailableMove() { move = m, score = currentMove.score });
         }
