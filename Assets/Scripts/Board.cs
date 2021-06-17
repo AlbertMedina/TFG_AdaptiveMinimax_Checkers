@@ -47,16 +47,6 @@ public class Board
 
         currentTurn = Turn.Black;
         playerBlack = _playerBlack;
-
-        /*boardState = new Square[,] { {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty},
-                                       {Square.Empty,         Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty,           Square.Empty} };*/
-
     }
 
     public Board(Square[,] _boardState, Turn _currentTurn, bool _playerBlack)
@@ -414,6 +404,7 @@ public class Board
         }
     }
 
+    #region Evaluation
     public float Evaluate(Turn _currentTurn)
     {
         if(GetAllMoves().Count == 0)
@@ -556,4 +547,5 @@ public class Board
 
         return 0f;
     }
+    #endregion
 }
